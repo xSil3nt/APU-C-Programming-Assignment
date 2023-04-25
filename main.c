@@ -100,3 +100,13 @@ void tutorLogin() {
         tutorLogin();
     }
 }
+
+void tutorMenu() {
+    int choice;
+    printf("Tutor Menu\n");
+    printf("___________\n");
+    printf("1. View assigned sessions\n");
+    printf("2. Logout\n");
+    printf("Enter your choice: ");
+    scanf("%d", &choice);
+}

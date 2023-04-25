@@ -110,3 +110,14 @@ void tutorMenu() {
     printf("Enter your choice: ");
     scanf("%d", &choice);
 }
+
+void studentMenu() {
+    int choice;
+    printf("\nStudent Menu\n");
+    printf("____________\n");
+    printf("1. View sessions\n");
+    printf("2. Enroll in a session\n");
+    printf("3. Logout\n");
+    printf("Enter your choice (1-3): ");
+    scanf("%d", &choice);
+}

@@ -48,3 +48,17 @@ void adminLogin() {
         adminLogin();
     }
 }
+
+void adminMenu() {
+    int choice;
+    printf("Admin Menu\n");
+    printf("___________\n");
+    printf("1. Register tutor\n");
+    printf("2. Register student\n");
+    printf("3. Add session\n");
+    printf("4. Enroll student to session\n");
+    printf("5. Display sessions\n");
+    printf("6. Logout\n");
+    printf("Enter your choice: ");
+    scanf("%d", &choice);
+}

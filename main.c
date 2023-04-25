@@ -13,7 +13,7 @@ void mainMenu() {
     printf("Enter your choice: ");
     //Ask for selection
     scanf("%d", &choice);
-    
+
     //Call respective function depending on selection, and return to menu if invalid selection
     switch (choice) {
         case 1:
@@ -31,5 +31,20 @@ void mainMenu() {
         default:
             printf("Invalid choice. Please try again.\n");
             mainMenu();
+    }
+}
+
+//Login function for admin, only requires a password, no username needed. Password is hardcoded -xXEpicAdminXx-
+//If correct password is entered, trigger admin menu, otherwise return to login screen
+void adminLogin() {
+    char password[20];
+    printf("Enter admin password: ");
+    scanf("%s", password);
+    
+    if (strcmp(password, "-xXEpicAdminXx-") == 0) {
+        adminMenu();
+    } else {
+        printf("Incorrect password. Please try again.\n");
+        adminLogin();
     }
 }

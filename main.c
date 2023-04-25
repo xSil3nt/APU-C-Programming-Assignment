@@ -1,3 +1,7 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
 //Main Menu function
 void mainMenu() {
     //Declare var for selection
@@ -61,4 +65,38 @@ void adminMenu() {
     printf("6. Logout\n");
     printf("Enter your choice: ");
     scanf("%d", &choice);
+}
+void tutorLogin() {
+    char username[50], password[50];
+    printf("Enter your username: ");
+    scanf("%s", username);
+    printf("Enter your password: ");
+    scanf("%s", password);
+
+    FILE *tutorCreds = fopen("tutorCreds.apdata", "r");
+    if (tutorCreds == NULL) {
+        printf("Error: could not open tutor credentials file.\n");
+        return;
+    }
+
+    char line[100];
+    char *user, *pass;
+    int found = 0;
+    while (fgets(line, sizeof(line), tutorCreds)) {
+        user = strtok(line, ",");
+        pass = strtok(NULL, "#");
+        if (strcmp(username, user) == 0 && strcmp(password, pass) == 0) {
+            found = 1;
+            break;
+        }
+    }
+    fclose(tutorCreds);
+
+    if (found) {
+        printf("\nLogin successful!\n");
+        tutorMenu();
+    } else {
+        printf("\nInvalid username or password. Please try again.\n");
+        tutorLogin();
+    }
 }

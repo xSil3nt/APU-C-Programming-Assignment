@@ -2,6 +2,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+void mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), studentLogin(), studentMenu();
+
 //Main Menu function
 void mainMenu() {
     //Declare var for selection

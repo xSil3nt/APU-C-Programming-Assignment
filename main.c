@@ -143,3 +143,55 @@ void studentMenu() {
     printf("Enter your choice (1-3): ");
     scanf("%d", &choice);
 }
+
+//Mostly a copy paste from tutorLogin function, should probably commonize but I'm currently a little lazy, perhaps a problem for future me
+void studentLogin() {
+    //Function for logging in students 
+    //Declare variables for input, 20 characters should be enough
+    //TODO: Maybe declare a const to store max input?
+    char username[20], password[20];
+    //Prompt for input
+    printf("Enter your username: ");
+    scanf("%s", username);
+    printf("Enter your password: ");
+    scanf("%s", password);
+
+    //Open the file that stores student credentials, and throw an error if file not found
+    FILE *studentCreds = fopen("studentCreds.apdata", "r");
+    if (studentCreds == NULL) {
+        printf("Error: could not open student credentials file.\n");
+        return;
+    }
+
+    //The file stores each set of credentials in a line, # marks the end of the line, commas seperate the credentials by type.
+    //Char array to store lines of the file as we loop through the file to find the password and username
+    char line[100];
+    //Decare pointers to store user and pass found in the file
+    char *user, *pass;
+    
+    //This feels like a confusing way to loop through the file, but I think it's the best
+    //fgets takes 3 arguments, where to store the text, max size of text, and where to read from
+    //The while loop continues until there is no more text, aka, fgets returns NULL when it reaches the end of the file
+    while (fgets(line, sizeof(line), studentCreds)) {
+        //Get username from the line currently being read, by looking for a comma (called the delimiter)
+        user = strtok(line, ",");
+        //Get password from the line currently being read, looks for hashtag
+        //We use NULL as the first argument because we want strtok to continue checking from the where the previous strtok left off, kinda confusing at first, but it works :p
+        pass = strtok(NULL, "#");
+
+        //Compare entered details with the ones from the file at the current line, if they match, trigger the studentMenu
+        if (strcmp(username, user) == 0 && strcmp(password, pass) == 0) {
+            printf("\nLogin successful!\n");
+            fclose(studentCreds);
+            studentMenu();
+        }
+    }
+    //We will exit the loop naturally if we don't find matching credentials, so ask the user to try again.
+    printf("\nInvalid username or password. Please try again.\n");
+    fclose(studentCreds);
+    studentLogin();
+}
+
+void main() {
+    mainMenu();
+}

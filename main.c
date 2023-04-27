@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-void mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), studentLogin(), studentMenu();
+void main(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), studentLogin(), studentMenu();
 
 //Main Menu function
 void mainMenu() {
@@ -193,5 +193,6 @@ void studentLogin() {
 }
 
 void main() {
+    //Program starts here
     mainMenu();
 }

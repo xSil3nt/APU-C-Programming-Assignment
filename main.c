@@ -2,7 +2,7 @@
     #include <string.h>
     #include <stdlib.h>
 
-    void main(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), studentLogin(), studentMenu(), regTutor(), delTutor();
+    void main(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), studentLogin(), studentMenu(), regTutor(), delTutor(), regStudent();
 
     //Main Menu function
     void mainMenu() {
@@ -32,7 +32,7 @@
                 studentLogin();
                 break;
             case 4:
-                printf("Thank you for using the APU Programming Cafe. Goodbye!\n");
+                printf("Thank you for using the APU Programming Cafe\n");
                 exit(0);
             default:
                 printf("Invalid choice. Please try again.\n");
@@ -83,6 +83,7 @@
                     break;
                 case 2:
                     //Call function to register student
+                    regStudent();
                     break;
                 case 3:
                     //Call function to remove tutor
@@ -221,6 +222,47 @@
         rename("temp.apdata", "tutorCreds.apdata");
 
         printf("\nTutor deleted successfully.\n");
+    }
+
+    void regStudent() {
+        //Declare variables for student details
+        char studentId[10], studentPass[20], studentName[50];
+
+        //Prompt for student ID
+        printf("\nEnter student ID: ");
+        scanf("%s", studentId);
+
+        //Check if student ID is already in use
+        FILE *studentCreds = fopen("studentCreds.apdata", "r");
+        char line[50];
+        while (fgets(line, sizeof(line), studentCreds)) {
+            char *id = strtok(line, ",");
+            if (strcmp(id, studentId) == 0) {
+                printf("\nStudent ID already in use. Please try again.\n");
+                fclose(studentCreds);
+                return;
+            }
+        }
+        fclose(studentCreds);
+
+        //Prompt for student details
+        printf("Enter student password: ");
+        scanf("%s", studentPass);
+        printf("Enter student name: ");
+        getchar(); // consume the newline character left in the input buffer
+        fgets(studentName, sizeof(studentName), stdin);
+        studentName[strcspn(studentName, "\n")] = '\0'; // remove the newline character from the input
+
+        //Add student to system
+        studentCreds = fopen("studentCreds.apdata", "a");
+        fprintf(studentCreds, "%s,%s#\n", studentId, studentPass);
+        fclose(studentCreds);
+
+        FILE *students = fopen("students.apdata", "a");
+        fprintf(students, "%s,%s#\n", studentId, studentName);
+        fclose(students);
+
+        printf("\nStudent added successfully.\n");
     }
 
     void tutorLogin() {

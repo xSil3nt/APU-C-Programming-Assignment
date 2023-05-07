@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-void main(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), studentLogin(), studentMenu();
+void main(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), studentLogin(), studentMenu(), regTutor();
 
 //Main Menu function
 void mainMenu() {
@@ -59,21 +59,47 @@ void adminLogin() {
 }
 
 void adminMenu() {
-    //Declare var for selection
+     //Declare var for selection
     int choice;
+    do {
+        //Show prompt
+        printf("\nAdmin Menu\n");
+        printf("___________\n");
+        printf("1. Register tutor\n");
+        printf("2. Register student\n");
+        printf("3. Add session\n");
+        printf("4. Enroll student to session\n");
+        printf("5. Display sessions\n");
+        printf("6. Logout\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
 
-    //Show prompt
-    printf("Admin Menu\n");
-    printf("___________\n");
-    printf("1. Register tutor\n");
-    printf("2. Register student\n");
-    printf("3. Add session\n");
-    printf("4. Enroll student to session\n");
-    printf("5. Display sessions\n");
-    printf("6. Logout\n");
-    printf("Enter your choice: ");
-    //Get input
-    scanf("%d", &choice);
+        switch (choice) {
+            case 1:
+                //Call function to register tutor
+                regTutor();
+                break;
+            case 2:
+                //Call function to register student
+                break;
+            case 3:
+                //Call function to add session
+                break;
+            case 4:
+                //Call function to enroll student to session
+                break;
+            case 5:
+                //Call function to display sessions
+                break;
+            case 6:
+                printf("\nLogging out\n");
+                //Return to main menu
+                mainMenu();
+                break;
+            default:
+                printf("\nInvalid choice. Please try again.\n");
+        }
+    } while (choice != 6);
 }
 void tutorLogin() {
     //Function for logging in tutors

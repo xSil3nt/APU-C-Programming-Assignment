@@ -2,7 +2,7 @@
     #include <string.h>
     #include <stdlib.h>
 
-    void main(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), studentLogin(), studentMenu(), regTutor();
+    void main(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), studentLogin(), studentMenu(), regTutor(), delTutor();
 
     //Main Menu function
     void mainMenu() {
@@ -67,10 +67,12 @@
             printf("___________\n");
             printf("1. Register tutor\n");
             printf("2. Register student\n");
-            printf("3. Add session\n");
-            printf("4. Enroll student to session\n");
-            printf("5. Display sessions\n");
-            printf("6. Logout\n");
+            printf("3. Remove tutor\n");
+            printf("4. Remove student\n");
+            printf("5. Add session\n");
+            printf("6. Enroll student to session\n");
+            printf("7. Display sessions\n");
+            printf("8. Logout\n");
             printf("Enter your choice: ");
             scanf("%d", &choice);
 
@@ -83,15 +85,22 @@
                     //Call function to register student
                     break;
                 case 3:
-                    //Call function to add session
+                    //Call function to remove tutor
+                    delTutor();
                     break;
                 case 4:
-                    //Call function to enroll student to session
+                    //Call function to remove student
                     break;
                 case 5:
-                    //Call function to display sessions
+                    //Call function to add session
                     break;
                 case 6:
+                    //Call function to enroll student to session
+                    break;
+                case 7:
+                    //Call function to display sessions
+                    break;
+                case 8:
                     printf("\nLogging out\n");
                     //Return to main menu
                     mainMenu();
@@ -144,6 +153,74 @@
         fclose(tutors);
 
         printf("\nTutor added successfully.\n");
+    }
+
+    void delTutor() {
+        //Declare variables for tutor ID
+        char tutorId[5];
+
+        //Prompt for tutor ID
+        printf("\nEnter tutor ID: ");
+        scanf("%s", tutorId);
+
+        //Check if tutor ID exists
+        FILE *tutors = fopen("tutors.apdata", "r");
+        char line[50];
+        int found = 0;
+        while (fgets(line, sizeof(line), tutors)) {
+            char *id = strtok(line, ",");
+            if (strcmp(id, tutorId) == 0) {
+                found = 1;
+                break;
+            }
+        }
+        fclose(tutors);
+
+        if (!found) {
+            printf("\nTutor ID not found. Please try again.\n");
+            return;
+        }
+
+        //Delete tutor from system
+        FILE *temp = fopen("temp.apdata", "w");
+        tutors = fopen("tutors.apdata", "r");
+
+        //This was the most annoying part of the assignment so far. This is so dumb, I hate this so much. This took sooooo long to figure out
+        while (fgets(line, sizeof(line), tutors)) {
+            //strstr looks for tutorId in line, returns NULL if not found
+            char *p = strstr(line, tutorId);
+            //If strstr can't find tutorId in line, it's a line we want to keep
+            //*(p + strlen(tutorId)) != ',' checks if the character right after the tutorId is not a comma, we use a pointer here cus we wanna see the character itself
+            //If the next character is a comma, it means the we don't want to keep the line.
+            //We do this check in case a password has the tutorId in the password, eg: "abcT01cba"
+            if (!p || *(p + strlen(tutorId)) != ',') {
+                fprintf(temp, "%s", line);
+            }
+        }
+        fclose(tutors);
+        fclose(temp);
+
+        //Delete the original file, and rename temp file to the original file name
+        remove("tutors.apdata");
+        rename("temp.apdata", "tutors.apdata");
+
+        //Explaination for the code is above
+        temp = fopen("temp.apdata", "w");
+        FILE *tutorCreds = fopen("tutorCreds.apdata", "r");
+        while (fgets(line, sizeof(line), tutorCreds)) {
+            char *p = strstr(line, tutorId);
+            if (!p || *(p + strlen(tutorId)) != ',') {
+                fprintf(temp, "%s", line);
+            }
+        }
+        fclose(tutorCreds);
+        fclose(temp);
+
+        //Delete the original file, and rename temp file to the original file name
+        remove("tutorCreds.apdata");
+        rename("temp.apdata", "tutorCreds.apdata");
+
+        printf("\nTutor deleted successfully.\n");
     }
 
     void tutorLogin() {

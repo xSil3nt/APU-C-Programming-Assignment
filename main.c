@@ -2,7 +2,7 @@
     #include <string.h>
     #include <stdlib.h>
 
-    void main(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), studentLogin(), studentMenu(), regTutor(), delTutor(), regStudent();
+    void main(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), studentLogin(), studentMenu(), regTutor(), delTutor(), regStudent(), delStudent();
 
     //Main Menu function
     void mainMenu() {
@@ -91,6 +91,7 @@
                     break;
                 case 4:
                     //Call function to remove student
+                    delStudent();
                     break;
                 case 5:
                     //Call function to add session
@@ -263,6 +264,75 @@
         fclose(students);
 
         printf("\nStudent added successfully.\n");
+    }
+
+
+    void delStudent() {
+        //Declare variables for student ID
+        char studentId[10];
+
+        //Prompt for student ID
+        printf("\nEnter student ID: ");
+        scanf("%s", studentId);
+
+        //Check if student ID exists
+        FILE *students = fopen("students.apdata", "r");
+        char line[50];
+        int found = 0;
+        while (fgets(line, sizeof(line), students)) {
+            char *id = strtok(line, ",");
+            if (strcmp(id, studentId) == 0) {
+                found = 1;
+                break;
+            }
+        }
+        fclose(students);
+
+        if (!found) {
+            printf("\nStudent ID not found. Please try again.\n");
+            return;
+        }
+
+        //Delete student from system
+        FILE *temp = fopen("temp.apdata", "w");
+        students = fopen("students.apdata", "r");
+
+        //This was the most annoying part of the assignment so far. This is so dumb, I hate this so much. This took sooooo long to figure out
+        while (fgets(line, sizeof(line), students)) {
+            //strstr looks for studentId in line, returns NULL if not found
+            char *p = strstr(line, studentId);
+            //If strstr can't find studentId in line, it's a line we want to keep
+            //*(p + strlen(studentId)) != ',' checks if the character right after the studentId is not a comma, we use a pointer here cus we wanna see the character itself
+            //If the next character is a comma, it means the we don't want to keep the line.
+            //We do this check in case a password has the studentId in the password, eg: "abcT01cba"
+            if (!p || *(p + strlen(studentId)) != ',') {
+                fprintf(temp, "%s", line);
+            }
+        }
+        fclose(students);
+        fclose(temp);
+
+        //Delete the original file, and rename temp file to the original file name
+        remove("students.apdata");
+        rename("temp.apdata", "students.apdata");
+
+        //Explaination for the code is above
+        temp = fopen("temp.apdata", "w");
+        FILE *studentCreds = fopen("studentCreds.apdata", "r");
+        while (fgets(line, sizeof(line), studentCreds)) {
+            char *p = strstr(line, studentId);
+            if (!p || *(p + strlen(studentId)) != ',') {
+                fprintf(temp, "%s", line);
+            }
+        }
+        fclose(studentCreds);
+        fclose(temp);
+
+        //Delete the original file, and rename temp file to the original file name
+        remove("studentCreds.apdata");
+        rename("temp.apdata", "studentCreds.apdata");
+
+        printf("\nStudent deleted successfully.\n");
     }
 
     void tutorLogin() {

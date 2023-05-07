@@ -106,18 +106,9 @@
         //Declare variables for tutor details
         char tutorId[5], tutorPass[20], tutorName[50], tutorSubject[50];
 
-        //Prompt for tutor details
+        //Prompt for tutor ID
         printf("\nEnter tutor ID: ");
         scanf("%s", tutorId);
-        printf("Enter tutor password: ");
-        scanf("%s", tutorPass);
-        printf("Enter tutor name: ");
-        getchar(); //Remove the newline character left in the input buffer, otherwise newline char is passed to fgets which breaks stuff
-        fgets(tutorName, sizeof(tutorName), stdin);
-        tutorName[strcspn(tutorName, "\n")] = '\0'; //Remove the newline character from the input from when the user presses enter
-        printf("Enter tutor subject: ");
-        fgets(tutorSubject, sizeof(tutorSubject), stdin);
-        tutorSubject[strcspn(tutorSubject, "\n")] = '\0'; //Remove the newline character from the input
 
         //Check if tutor ID is already in use
         FILE *tutorCreds = fopen("tutorCreds.apdata", "r");
@@ -132,12 +123,22 @@
         }
         fclose(tutorCreds);
 
-        //Add tutor login to creds file
+        //Prompt for tutor details
+        printf("Enter tutor password: ");
+        scanf("%s", tutorPass);
+        printf("Enter tutor name: ");
+        getchar(); // consume the newline character left in the input buffer
+        fgets(tutorName, sizeof(tutorName), stdin);
+        tutorName[strcspn(tutorName, "\n")] = '\0'; // remove the newline character from the input
+        printf("Enter tutor subject: ");
+        fgets(tutorSubject, sizeof(tutorSubject), stdin);
+        tutorSubject[strcspn(tutorSubject, "\n")] = '\0'; // remove the newline character from the input
+
+        //Add tutor to system
         tutorCreds = fopen("tutorCreds.apdata", "a");
         fprintf(tutorCreds, "%s,%s#\n", tutorId, tutorPass);
         fclose(tutorCreds);
 
-        //Add tutor info to file
         FILE *tutors = fopen("tutors.apdata", "a");
         fprintf(tutors, "%s,%s;%s#\n", tutorId, tutorName, tutorSubject);
         fclose(tutors);

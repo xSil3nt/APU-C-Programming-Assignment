@@ -2,7 +2,7 @@
     #include <string.h>
     #include <stdlib.h>
 
-    void main(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), studentLogin(), studentMenu(), regTutor(), delTutor(), regStudent(), delStudent();
+    void main(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), studentLogin(), studentMenu(), regTutor(), delTutor(), regStudent(), delStudent(), createSession();
 
     //Main Menu function
     void mainMenu() {
@@ -95,6 +95,7 @@
                     break;
                 case 5:
                     //Call function to add session
+                    createSession();
                     break;
                 case 6:
                     //Call function to enroll student to session
@@ -450,6 +451,99 @@
         printf("\nInvalid username or password. Please try again.\n");
         fclose(studentCreds);
         studentLogin();
+    }
+
+    void createSession() {
+        //Declare variables for session information
+        char tutorId[5];
+        char sessionId[10];
+        char day[10];
+        char time[10];
+        char location[20];
+
+        //Display list of tutors and their subjects
+        printf("\n%-10s %-20s %s\n", "Tutor ID", "Subject", "Tutor Name");
+        FILE *tutors = fopen("tutors.apdata", "r");
+        char line[50];
+        while (fgets(line, sizeof(line), tutors)) {
+            char *id = strtok(line, ",");
+            char *nameAndSubject = strtok(NULL, "\n");
+            char *subject = strtok(nameAndSubject, ";");
+            char *name = strtok(NULL, ";");
+            printf("%-10s %-20s %s\n", id, subject, name);
+        }
+        fclose(tutors);
+
+        //Prompt for tutor ID
+        printf("\nEnter tutor ID: ");
+        scanf("%s", tutorId);
+
+        //Check if tutor ID exists and if tutor already has a session
+        tutors = fopen("tutors.apdata", "r");
+        char *subject = NULL;
+        char *name = NULL;
+        char *existingSessionId = NULL;
+        while (fgets(line, sizeof(line), tutors)) {
+            char *id = strtok(line, ",");
+            if (strcmp(id, tutorId) == 0) {
+                name = strtok(NULL, ";");
+                subject = strtok(NULL, "#");
+                break;
+            }
+        }
+        fclose(tutors);
+
+        if (!name || !subject) {
+            printf("\nTutor ID not found. Please try again.\n");
+            return;
+        }
+
+        FILE *sessions = fopen("sessions.apdata", "r");
+        while (fgets(line, sizeof(line), sessions)) {
+            char *sessionTutorId = strtok(line, ",");
+            char *sessionSessionId = strtok(NULL, ",");
+            if (strcmp(sessionTutorId, tutorId) == 0) {
+                existingSessionId = sessionSessionId;
+                break;
+            }
+        }
+        fclose(sessions);
+
+        if (existingSessionId) {
+            printf("\nTutor already has a session (Session ID: %s). Please try again.\n", existingSessionId);
+            return;
+        }
+
+        //Prompt for session information
+        printf("Enter session ID: ");
+        scanf("%s", sessionId);
+
+        //Check if session ID is unique
+        sessions = fopen("sessions.apdata", "r");
+        while (fgets(line, sizeof(line), sessions)) {
+            char *sessionTutorId = strtok(line, ",");
+            char *sessionSessionId = strtok(NULL, ",");
+            if (strcmp(sessionSessionId, sessionId) == 0) {
+                printf("\nSession ID already exists. Please try again.\n");
+                fclose(sessions);
+                return;
+            }
+        }
+        fclose(sessions);
+
+        printf("Enter day: ");
+        scanf("%s", day);
+        printf("Enter time: ");
+        scanf("%s", time);
+        printf("Enter location: ");
+        scanf("%s", location);
+
+        //Write session to file
+        sessions = fopen("sessions.apdata", "a");
+        fprintf(sessions, "%s,%s,%s,%s,%s,%s,%s#\n", tutorId, sessionId, subject, name, day, time, location);
+        fclose(sessions);
+
+        printf("\nSession created successfully.\n");
     }
 
     void main() {

@@ -12,7 +12,7 @@
 #define WHT   "\x1B[37m"
 #define RESET "\x1B[0m"
 
-void main(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), studentLogin(), studentMenu(), regTutor(), delTutor(), regStudent(), delStudent(), createSession(), displaySessions();
+void main(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), studentLogin(), studentMenu(), regTutor(), delTutor(), regStudent(), delStudent(), createSession(), displaySessions(), delSession();
 
     //Main Menu function
     void mainMenu() {
@@ -82,7 +82,8 @@ void main(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), s
             printf("5. Add session\n");
             printf("6. Enroll student to session\n");
             printf("7. Display sessions\n");
-            printf("8. Logout\n");
+            printf("8. Remove sessions\n");
+            printf("9. Logout\n");
             printf("Enter your choice: ");
             scanf("%d", &choice);
 
@@ -115,6 +116,10 @@ void main(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), s
                     displaySessions();
                     break;
                 case 8:
+                    //Call function to delete session
+                    delSession();
+                    break;
+                case 9:
                     printf("\nLogging out\n");
                     //Return to main menu
                     mainMenu();
@@ -582,6 +587,56 @@ void main(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), s
         fclose(sessions);
     }
     
+void delSession() {
+    //Display list of sessions
+    printf("\nList of sessions:\n");
+    displaySessions();
+
+    //Prompt for session ID
+    char sessionId[10];
+    printf("\nEnter session ID: ");
+    scanf("%s", sessionId);
+
+    //Check if session ID exists
+    FILE *sessions = fopen("sessions.apdata", "r");
+    char line[100];
+    int sessionFound = 0;
+    while (fgets(line, sizeof(line), sessions)) {
+        char *sessionSessionId = strtok(line, ",");
+        if (strcmp(sessionSessionId, sessionId) == 0) {
+            sessionFound = 1;
+            break;
+        }
+    }
+    fclose(sessions);
+
+    if (sessionFound = 0) {
+        printf("\nSession ID not found. Please try again.\n");
+        return;
+    }
+
+    //Delete session from file
+    sessions = fopen("sessions.apdata", "r");
+    FILE *temp = fopen("temp.apdata", "w");
+        while (fgets(line, sizeof(line), sessions)) {
+            //strstr looks for sessionId in line, returns NULL if not found
+            char *p = strstr(line, sessionId);
+            //If strstr can't find sessionId in line, it's a line we want to keep
+            //*(p + strlen(sessionId)) != ',' checks if the character right after the tutorId is not a comma, we use a pointer here cus we wanna see the character itself
+            //If the next character is a comma, it means the we don't want to keep the line.
+            if (!p || *(p + strlen(sessionId)) != ',') {
+                fprintf(temp, "%s", line);
+            }
+        }
+    fclose(sessions);
+    fclose(temp);
+
+    remove("sessions.apdata");
+    rename("temp.apdata", "sessions.apdata");
+
+    printf("\nSession deleted successfully.\n");
+}
+        
     void main() {
         //Program starts here
         mainMenu();

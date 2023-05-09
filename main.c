@@ -2,6 +2,15 @@
 #include <string.h>
 #include <stdlib.h>
 
+//Define colors to add some spice to outputs :D
+#define RED   "\x1B[31m"
+#define GRN   "\x1B[32m"
+#define YEL   "\x1B[33m"
+#define BLU   "\x1B[34m"
+#define MAG   "\x1B[35m"
+#define CYN   "\x1B[36m"
+#define WHT   "\x1B[37m"
+#define RESET "\x1B[0m"
 
 void main(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), studentLogin(), studentMenu(), regTutor(), delTutor(), regStudent(), delStudent(), createSession(), displaySessions();
 
@@ -464,7 +473,7 @@ void main(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), s
         char location[20];
 
         //Display list of tutors and their subjects
-        printf("\n%-10s %-20s %s\n", "Tutor ID", "Subject", "Tutor Name");
+        printf(MAG "\n%-10s %-20s %s\n", "Tutor ID", "Subject", "Tutor Name" RESET);
         FILE *tutors = fopen("tutors.apdata", "r");
         char line[50];
         while (fgets(line, sizeof(line), tutors)) {
@@ -550,7 +559,7 @@ void main(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), s
 
     void displaySessions() {
         //Display list of sessions
-        printf("\n%-10s %-10s %-20s %-20s %-10s %-10s %s\n", "Tutor ID", "Session ID", "Subject", "Tutor Name", "Day", "Time", "Location");
+        printf(MAG "\n%-10s %-15s %-20s %-20s %-10s %-10s %s\n", "Tutor ID", "Session ID", "Subject", "Tutor Name", "Day", "Time", "Location" RESET);
         FILE *sessions = fopen("sessions.apdata", "r");
         char line[100];
         while (fgets(line, sizeof(line), sessions)) {
@@ -565,7 +574,7 @@ void main(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), s
             //Only show actual sessions, new line in the file causes this func to show null everywhere in the final line
             if (tutorId != NULL)
             {
-                printf("%-10s %-10s %-20s %-20s %-10s %-10s %s\n", tutorId, sessionId, subject, name, day, time, location);
+                printf("%-10s %-15s %-20s %-20s %-10s %-10s %s\n", tutorId, sessionId, subject, name, day, time, location);
             }
             
             

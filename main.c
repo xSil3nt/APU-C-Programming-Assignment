@@ -1,8 +1,9 @@
-    #include <stdio.h>
-    #include <string.h>
-    #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
-    void main(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), studentLogin(), studentMenu(), regTutor(), delTutor(), regStudent(), delStudent(), createSession();
+
+void main(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), studentLogin(), studentMenu(), regTutor(), delTutor(), regStudent(), delStudent(), createSession(), displaySessions();
 
     //Main Menu function
     void mainMenu() {
@@ -102,6 +103,7 @@
                     break;
                 case 7:
                     //Call function to display sessions
+                    displaySessions();
                     break;
                 case 8:
                     printf("\nLogging out\n");
@@ -546,6 +548,31 @@
         printf("\nSession created successfully.\n");
     }
 
+    void displaySessions() {
+        //Display list of sessions
+        printf("\n%-10s %-10s %-20s %-20s %-10s %-10s %s\n", "Tutor ID", "Session ID", "Subject", "Tutor Name", "Day", "Time", "Location");
+        FILE *sessions = fopen("sessions.apdata", "r");
+        char line[100];
+        while (fgets(line, sizeof(line), sessions)) {
+            char *tutorId = strtok(line, ",");
+            char *sessionId = strtok(NULL, ",");
+            char *subject = strtok(NULL, ",");
+            char *name = strtok(NULL, ",");
+            char *day = strtok(NULL, ",");
+            char *time = strtok(NULL, ",");
+            char *location = strtok(NULL, "#");
+
+            //Only show actual sessions, new line in the file causes this func to show null everywhere in the final line
+            if (tutorId != NULL)
+            {
+                printf("%-10s %-10s %-20s %-20s %-10s %-10s %s\n", tutorId, sessionId, subject, name, day, time, location);
+            }
+            
+            
+        }
+        fclose(sessions);
+    }
+    
     void main() {
         //Program starts here
         mainMenu();

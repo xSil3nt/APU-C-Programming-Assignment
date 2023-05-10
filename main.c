@@ -27,10 +27,10 @@ char* lookupStudentName();
         //Show prompt
         printf(BOLD UDL BLU "APU " CYN "Programming " GRN "Cafe\n\n" RESET);
         
-        printf("1. Login as Admin\n");
-        printf("2. Login as Tutor\n");
+        printf(YEL "1. Login as Admin\n" );
+        printf("2. Login as Tutor\n" );
         printf("3. Login as Student\n");
-        printf("4. Exit\n");
+        printf(RED "4. Exit\n" RESET);
         printf("Enter your choice: ");
         //Ask for selection
         scanf("%d", &choice);
@@ -484,6 +484,7 @@ char* lookupStudentName();
                 printf("\nLogin successful!\n");
                 fclose(studentCreds);
                 studentMenu();
+                return;
             }
         }
         //We will exit the loop naturally if we don't find matching credentials, so ask the user to try again.

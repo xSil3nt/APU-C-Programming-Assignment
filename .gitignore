@@ -2,3 +2,6 @@ main.exe
 /bak
 tempCodeRunnerFile.c
 /.vscode
+pass.c 
+pass.exe
+*.tempCodeRunnerFile

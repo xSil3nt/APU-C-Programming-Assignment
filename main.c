@@ -252,7 +252,7 @@ char* lookupStudentName();
         remove("tutorCreds.apdata");
         rename("temp.apdata", "tutorCreds.apdata");
 
-        printf("\nTutor deleted successfully.\n");
+        printf("\nTutor deleted successfully. Don't forget to delete sessions corresponding to this tutor if needed.\n");
     }
 
     void regStudent() {
@@ -639,9 +639,28 @@ char* lookupStudentName();
             return;
         }
 
-        //Delete session from file
-        sessions = fopen("sessions.apdata", "r");
+        //Delete session from sessionStudents.apdata
+        FILE *sessionStudents = fopen("sessionStudents.apdata", "r");
         FILE *temp = fopen("temp.apdata", "w");
+            while (fgets(line, sizeof(line), sessionStudents)) {
+                //strstr looks for sessionId in line, returns NULL if not found
+                char *p = strstr(line, sessionId);
+                //If strstr can't find sessionId in line, it's a line we want to keep
+                //*(p + strlen(sessionId)) != ',' checks if the character right after the tutorId is not a comma, we use a pointer here cus we wanna see the character itself
+                //If the next character is a comma, it means the we don't want to keep the line.
+                if (!p || *(p + strlen(sessionId)) != ';') {
+                    fprintf(temp, "%s", line);
+                }
+            }
+        fclose(sessionStudents);
+        fclose(temp);
+
+        remove("sessionStudents.apdata");
+        rename("temp.apdata", "sessionStudents.apdata");
+
+        //Delete session from sessions.apdata
+        sessions = fopen("sessions.apdata", "r");
+        FILE *temp2 = fopen("temp.apdata", "w");
             while (fgets(line, sizeof(line), sessions)) {
                 //strstr looks for sessionId in line, returns NULL if not found
                 char *p = strstr(line, sessionId);
@@ -649,14 +668,15 @@ char* lookupStudentName();
                 //*(p + strlen(sessionId)) != ',' checks if the character right after the tutorId is not a comma, we use a pointer here cus we wanna see the character itself
                 //If the next character is a comma, it means the we don't want to keep the line.
                 if (!p || *(p + strlen(sessionId)) != ',') {
-                    fprintf(temp, "%s", line);
+                    fprintf(temp2, "%s", line);
                 }
             }
         fclose(sessions);
-        fclose(temp);
+        fclose(temp2);
 
         remove("sessions.apdata");
         rename("temp.apdata", "sessions.apdata");
+
 
         printf("\nSession deleted successfully.\n");
     }

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "hash.h"
 
 //Define colors to add some spice to outputs :D
 #define RED   "\x1B[31m"
@@ -132,7 +133,7 @@ void main(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), s
 
     void regTutor() {
         //Declare variables for tutor details
-        char tutorId[5], tutorPass[20], tutorName[50], tutorSubject[50];
+        char tutorId[5], tutorPass[20], tutorName[50], tutorSubject[50], hashedPass[32];
 
         //Prompt for tutor ID
         printf("\nEnter tutor ID: ");
@@ -162,9 +163,12 @@ void main(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), s
         fgets(tutorSubject, sizeof(tutorSubject), stdin);
         tutorSubject[strcspn(tutorSubject, "\n")] = '\0'; // remove the newline character from the input
 
+        //Find hash of input password & String-ify
+        sprintf(hashedPass, "%lu", hash(tutorPass));
+
         //Add tutor to system
         tutorCreds = fopen("tutorCreds.apdata", "a");
-        fprintf(tutorCreds, "%s,%s#\n", tutorId, tutorPass);
+        fprintf(tutorCreds, "%s,%s#\n", tutorId, hashedPass);
         fclose(tutorCreds);
 
         FILE *tutors = fopen("tutors.apdata", "a");
@@ -244,7 +248,7 @@ void main(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), s
 
     void regStudent() {
         //Declare variables for student details
-        char studentId[10], studentPass[20], studentName[50];
+        char studentId[10], studentPass[20], studentName[50], hashedPass[32];
 
         //Prompt for student ID
         printf("\nEnter student ID: ");
@@ -271,9 +275,12 @@ void main(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), s
         fgets(studentName, sizeof(studentName), stdin);
         studentName[strcspn(studentName, "\n")] = '\0'; // remove the newline character from the input
 
+        //Find hash of input password & String-ify
+        sprintf(hashedPass, "%lu", hash(studentPass));
+
         //Add student to system
         studentCreds = fopen("studentCreds.apdata", "a");
-        fprintf(studentCreds, "%s,%s#\n", studentId, studentPass);
+        fprintf(studentCreds, "%s,%s#\n", studentId, hashedPass);
         fclose(studentCreds);
 
         FILE *students = fopen("students.apdata", "a");
@@ -357,12 +364,16 @@ void main(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), s
         //TODO: Maybe commonize tutor and student login? Dunno how much work that will be, decide later?? 
         //Declare variables for input, 20 characters should be enough
         //TODO: Maybe declare a const to store max input?
-        char username[20], password[20];
+        char username[20], password[20], hashedpass[32];
         //Prompt for input
         printf("Enter your username: ");
         scanf("%s", username);
         printf("Enter your password: ");
         scanf("%s", password);
+
+        //Find hash of input password & String-ify
+        sprintf(hashedpass, "%lu", hash(password));
+
 
         //Open the file that stores tutor credentials, and throw an error if file not found
         FILE *tutorCreds = fopen("tutorCreds.apdata", "r");
@@ -388,7 +399,7 @@ void main(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), s
             pass = strtok(NULL, "#");
 
             //Compare entered details with the ones from the file at the current line, if they match, trigger the tutorMenu
-            if (strcmp(username, user) == 0 && strcmp(password, pass) == 0) {
+            if (strcmp(username, user) == 0 && strcmp(hashedpass, pass) == 0) {
                 printf("\nLogin successful!\n");
                 fclose(tutorCreds);
                 tutorMenu();
@@ -417,7 +428,7 @@ void main(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), s
         printf("1. View sessions\n");
         printf("2. Enroll in a session\n");
         printf("3. Logout\n");
-        printf("Enter your choice (1-3): ");
+        printf("Enter your choice: ");
         scanf("%d", &choice);
     }
 
@@ -426,12 +437,15 @@ void main(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), s
         //Function for logging in students 
         //Declare variables for input, 20 characters should be enough
         //TODO: Maybe declare a const to store max input?
-        char username[20], password[20];
+        char username[20], password[20], hashedPass[32];
         //Prompt for input
         printf("Enter your username: ");
         scanf("%s", username);
         printf("Enter your password: ");
         scanf("%s", password);
+
+        //Find hash of input password & String-ify
+        sprintf(hashedPass, "%lu", hash(password));
 
         //Open the file that stores student credentials, and throw an error if file not found
         FILE *studentCreds = fopen("studentCreds.apdata", "r");
@@ -457,7 +471,7 @@ void main(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), s
             pass = strtok(NULL, "#");
 
             //Compare entered details with the ones from the file at the current line, if they match, trigger the studentMenu
-            if (strcmp(username, user) == 0 && strcmp(password, pass) == 0) {
+            if (strcmp(username, user) == 0 && strcmp(hashedPass, pass) == 0) {
                 printf("\nLogin successful!\n");
                 fclose(studentCreds);
                 studentMenu();

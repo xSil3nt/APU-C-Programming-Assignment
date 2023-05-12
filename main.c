@@ -16,7 +16,7 @@
 #define UDL "\x1B[4m"
 
 
-void main(), pause(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), studentLogin(), studentMenu(), regTutor(), delTutor(), regStudent(), delStudent(), createSession(), displaySessions(), delSession(), displaySessionStudents();
+void main(), pause(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), studentLogin(), studentMenu(), regTutor(), delTutor(), regStudent(), delStudent(), createSession(), displaySessions(), delSession(), displaySessionStudents(), adminEnrollStudent(), enrollStudent(), displayStudents();
 char* lookupStudentName();
 
     //Main Menu function
@@ -116,6 +116,7 @@ char* lookupStudentName();
                     break;
                 case 6:
                     //Call function to enroll student to session
+                    adminEnrollStudent();
                     break;
                 case 7:
                     //Call function to display sessions
@@ -137,7 +138,7 @@ char* lookupStudentName();
                 default:
                     printf("\nInvalid choice. Please try again.\n");
             }
-        } while (choice != 6);
+        } while (choice != 10);
     }
 
     void regTutor() {
@@ -310,7 +311,7 @@ char* lookupStudentName();
 
         //Check if student ID exists
         FILE *students = fopen("students.apdata", "r");
-        char line[50];
+        char line[100];
         int found = 0;
         while (fgets(line, sizeof(line), students)) {
             char *id = strtok(line, ",");
@@ -681,66 +682,187 @@ char* lookupStudentName();
         printf("\nSession deleted successfully.\n");
     }
 
-void pause() {
-    printf("\nPress any key to continue\n");
-    getchar();
-    getchar();
-}
-
-char* lookupStudentName(char *studentId) {
-    // Open students.apdata file
-    FILE *studentsFile = fopen("students.apdata", "r");
-    char line[100];
-    // Find the line with the specified student ID
-    while (fgets(line, sizeof(line), studentsFile)) {
-        char *id = strtok(line, ",");
-        char *name = strtok(NULL, "#");
-        if (strcmp(id, studentId) == 0) {
-            fclose(studentsFile);
-            return name;
-        }
+    void pause() {
+        printf("\nPress any key to continue\n");
+        getchar();
+        getchar();
     }
-    fclose(studentsFile);
-    return NULL;
-}
 
-void displaySessionStudents() {
-    char sessionId[10];
-    printf("Enter session ID: ");
-    scanf("%s", sessionId);
-
-    // Open sessionStudents.apdata file
-    FILE *sessionStudents = fopen("sessionStudents.apdata", "r");
-    char line[100];
-
-    // Find the line with the specified session ID
-    while (fgets(line, sizeof(line), sessionStudents)) {
-        char *session = strtok(line, ";");
-        if (strcmp(session, sessionId) == 0) {
-            char *students = strtok(NULL, "#");
-            printf("Students assigned to session " RED "%s" RESET ":\n", sessionId);
-            char *student = strtok(students, ", ");
-            int count = 0;
-            char *studentIdList[100];
-            while (student != NULL) {
-                studentIdList[count] = student;
-                count++;
-                student = strtok(NULL, ", ");
+    char* lookupStudentName(char *studentId) {
+        // Open students.apdata file
+        FILE *studentsFile = fopen("students.apdata", "r");
+        char line[100];
+        // Find the line with the specified student ID
+        while (fgets(line, sizeof(line), studentsFile)) {
+            char *id = strtok(line, ",");
+            char *name = strtok(NULL, "#");
+            if (strcmp(id, studentId) == 0) {
+                fclose(studentsFile);
+                return name;
             }
-            for (int i = 0; i < count; i++) {
-                if (lookupStudentName(studentIdList[i]) != NULL) {
-                    printf(GRN "%s" RESET " - " BLU "%s\n" RESET, studentIdList[i], lookupStudentName(studentIdList[i]));
+        }
+        fclose(studentsFile);
+        return NULL;
+    }
+
+    void displaySessionStudents() {
+        char sessionId[10];
+        printf("Enter session ID: ");
+        scanf("%s", sessionId);
+
+        // Open sessionStudents.apdata file
+        FILE *sessionStudents = fopen("sessionStudents.apdata", "r");
+        char line[100];
+
+        // Find the line with the specified session ID
+        while (fgets(line, sizeof(line), sessionStudents)) {
+            char *session = strtok(line, ";");
+            if (strcmp(session, sessionId) == 0) {
+                char *students = strtok(NULL, "\n");
+                printf("Students assigned to session " RED "%s" RESET ":\n", sessionId);
+                char *student = strtok(students, ", ");
+                int count = 0;
+                char *studentIdList[100];
+                while (student != NULL) {
+                    studentIdList[count] = student;
+                    count++;
+                    student = strtok(NULL, ", ");
                 }
+                for (int i = 0; i < count; i++) {
+                    if (lookupStudentName(studentIdList[i]) != NULL) {
+                        printf(GRN "%s" RESET " - " BLU "%s\n" RESET, studentIdList[i], lookupStudentName(studentIdList[i]));
+                    }
+                }
+                fclose(sessionStudents);
+                pause();
+                return;
             }
-            fclose(sessionStudents);
-            pause();
+        }
+        printf("No students assigned to session " RED "%s\n" RESET, sessionId);
+        fclose(sessionStudents);
+        pause();
+    }
+
+    void adminEnrollStudent() {
+        char selectedStudentId[10];
+        displayStudents();
+        printf(YEL "Enter a student id to enroll: " RESET);
+        scanf("%s",selectedStudentId);
+        
+        //Check if student ID exists
+        FILE *students = fopen("students.apdata", "r");
+        char line[100];
+        int found = 0;
+        while (fgets(line, sizeof(line), students)) {
+            char *id = strtok(line, ",");
+            if (strcmp(id, selectedStudentId) == 0) {
+                found = 1;
+                enrollStudent(selectedStudentId);
+                break;
+            }
+        }
+        fclose(students);
+
+        if (!found) {
+            printf("\nStudent ID not found. Please try again.\n");
             return;
         }
     }
-    printf("No students assigned to session " RED "%s\n" RESET, sessionId);
+
+void enrollStudent(char *studentId) {
+    char sessionId[10];
+
+    displaySessions();
+    printf("Enter Session ID to enroll %s (%s) to: ", lookupStudentName(studentId), studentId);
+    scanf("%s", sessionId);
+
+    //Check if session ID exists
+    FILE *sessions = fopen("sessionStudents.apdata", "r");
+    char line[100];
+    int found = 0;
+    while (fgets(line, sizeof(line), sessions)) {
+        char *id = strtok(line, ";");
+        if (strcmp(id, sessionId) == 0) {
+            found = 1;
+            break;
+        }
+    }
+    fclose(sessions);
+
+    if (!found) {
+        printf("\nSession ID not found. Returning to menu.\n");
+        return;
+    }
+
+    //Add studentId to sessionStudents.apdata file
+    FILE *sessionStudents = fopen("sessionStudents.apdata", "r");
+    FILE *tempFile = fopen("tempSessionStudents.apdata", "w");
+    char sessionLine[100];
+    int sessionFound, alreadyExists = 0;
+    while (fgets(sessionLine, sizeof(sessionLine), sessionStudents)) {
+        char *session = strtok(sessionLine, ";");
+        char *studentList = strtok(NULL, "\n");
+        if (strcmp(session, sessionId) == 0) {
+            sessionFound = 1;
+            if (strstr(studentList,studentId) == NULL) {
+                fprintf(tempFile, "%s;%s,%s\n", session, studentList, studentId);
+            } else {
+                alreadyExists = 1;
+                fprintf(tempFile, "%s;%s\n", session, studentList);
+            }
+                
+        } else {
+            fprintf(tempFile, "%s;%s\n", session, studentList);
+        }
+    }
     fclose(sessionStudents);
-    pause();
+    fclose(tempFile);
+
+    //Replace original file with temporary file
+    remove("sessionStudents.apdata");
+    rename("tempSessionStudents.apdata", "sessionStudents.apdata");
+
+    if (!sessionFound) {
+        printf("\nSession ID not found in sessionStudents.apdata. Returning to menu.\n");
+        return;
+    }
+    if (alreadyExists = 1) {
+        printf("\n%s (%s) is already enrolled in %s\n", lookupStudentName(studentId), studentId, sessionId);
+        return;
+    } else {
+        printf("\n%s (%s) has been enrolled in session %s.\n", lookupStudentName(studentId), studentId, sessionId);
+    }
+    
 }
+
+    void displayStudents() {
+        // Open the students file for reading
+        FILE *students = fopen("students.apdata", "r");
+
+        // Check if the file exists
+        if (!students) {
+            printf("\nNo students found.\n");
+            return;
+        }
+
+        // Declare a buffer to store each line read from the file
+        char line[100];
+
+        // Read each line and extract the studentId and studentName
+        printf(MAG "\nStudent ID\tStudent Name\n" RESET);
+        while (fgets(line, sizeof(line), students)) {
+            // Extract the studentId and studentName using strtok
+            char *id = strtok(line, ",");
+            char *name = strtok(NULL, "#");
+
+            // Print the studentId and studentName
+            printf("%s\t\t%s\n", id, name);
+        }
+
+        // Close the file
+        fclose(students);
+
+    }
         
     void main() {
         //Program starts here

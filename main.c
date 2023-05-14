@@ -16,8 +16,9 @@
 #define UDL "\x1B[4m"
 
 
-void main(), pause(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), studentLogin(), studentMenu(), regTutor(), delTutor(), regStudent(), delStudent(), createSession(), displaySessions(), delSession(), displaySessionStudents(), adminEnrollStudent(), enrollStudent(), displayStudents();
+void main(), pause(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), studentLogin(), studentMenu(), regTutor(), delTutor(), regStudent(), delStudent(), createSession(), displaySessions(), delSession(), displaySessionStudents(), adminEnrollStudent(), enrollStudent(), displayStudents(), viewTutorSessions();
 char* lookupStudentName();
+char* lookupTutorName();
 
 char currentUser[20];
 
@@ -427,7 +428,7 @@ char currentUser[20];
 
     void tutorMenu() {
         int choice;
-        printf("Tutor Menu\n");
+        printf(BOLD UDL YEL "\nTutor Menu " RESET UDL"- Logged in as " BOLD BLU "%s (%s)\n" RESET, lookupTutorName(currentUser), currentUser);
         printf("___________\n");
         printf("1. View sessions assigned to me\n");
         printf("2. Logout\n");
@@ -437,7 +438,8 @@ char currentUser[20];
         switch (choice) {
             case 1:
                 //Function for viewing sessions assigned to tutor
-                break;
+                viewTutorSessions();
+                tutorMenu;
             case 2:
                 //Logout, return to main menu
                 mainMenu();
@@ -462,13 +464,14 @@ char currentUser[20];
         switch (choice) {
             case 1:
                 //View my sessions
-                
+
                 studentMenu();
             case 2:
                 //View all sessions
                 displaySessions();
                 studentMenu();
             case 3:
+                //Enroll student into a session of their choice
                 enrollStudent(currentUser);
                 studentMenu();
             case 4:
@@ -747,6 +750,23 @@ char currentUser[20];
         return NULL;
     }
 
+    char* lookupTutorName(char *tutorId) {
+        // Open students.apdata file
+        FILE *tutorsFile = fopen("tutors.apdata", "r");
+        char line[100];
+        // Find the line with the specified student ID
+        while (fgets(line, sizeof(line), tutorsFile)) {
+            char *id = strtok(line, ",");
+            char *name = strtok(NULL, ";");
+            if (strcmp(id, tutorId) == 0) {
+                fclose(tutorsFile);
+                return name;
+            }
+        }
+        fclose(tutorsFile);
+        return NULL;
+    }
+
     void displaySessionStudents() {
         char sessionId[10];
         printf("Enter session ID: ");
@@ -904,6 +924,29 @@ void enrollStudent(char *studentId) {
         // Close the file
         fclose(students);
 
+    }
+
+    void viewTutorSessions() {
+        //Display list of sessions
+        printf(MAG "\n%-10s %-15s %-20s %-20s %-10s %-10s %s\n", "Tutor ID", "Session ID", "Subject", "Tutor Name", "Day", "Time", "Location" RESET);
+        FILE *sessions = fopen("sessions.apdata", "r");
+        char line[100];
+        while (fgets(line, sizeof(line), sessions)) {
+            char *tutorId = strtok(line, ",");
+            char *sessionId = strtok(NULL, ",");
+            char *subject = strtok(NULL, ",");
+            char *name = strtok(NULL, ",");
+            char *day = strtok(NULL, ",");
+            char *time = strtok(NULL, ",");
+            char *location = strtok(NULL, "#");
+
+            //Only show actual sessions, new line in the file causes this func to show null everywhere in the final line
+            if (strcmp(tutorId, currentUser) == 0)
+            {
+                printf("%-10s %-15s %-20s %-20s %-10s %-10s %s\n", tutorId, sessionId, subject, name, day, time, location);
+            }
+        }
+        fclose(sessions);
     }
 
     void main() {

@@ -135,7 +135,6 @@ char currentUser[20];
     void adminMenu() {
         //Declare var for selection
         int choice;
-        do {
             //Show prompt
             printf("\nAdmin Menu\n");
             printf("___________\n");
@@ -156,48 +155,47 @@ char currentUser[20];
                 case 1:
                     //Call function to register tutor
                     regTutor();
-                    break;
+                    adminMenu();
                 case 2:
                     //Call function to register student
                     regStudent();
-                    break;
+                    adminMenu();
                 case 3:
                     //Call function to remove tutor
                     delTutor();
-                    break;
+                    adminMenu();
                 case 4:
                     //Call function to remove student
                     delStudent();
-                    break;
+                    adminMenu();
                 case 5:
                     //Call function to add session
                     createSession();
-                    break;
+                    adminMenu();
                 case 6:
                     //Call function to enroll student to session
                     adminEnrollStudent();
-                    break;
+                    adminMenu();
                 case 7:
                     //Call function to display sessions
                     displaySessions();
-                    break;
+                    adminMenu();
                 case 8:
                     //Call function to delete session
                     delSession();
-                    break;
+                    adminMenu();
                 case 9:
                     //Call function to show students assigned to a specific session
+                    displaySessions();
                     displaySessionStudents();
-                    break;
+                    adminMenu();
                 case 10:
-                    printf("\nLogging out\n");
-                    //Return to main menu
+                    //Logout, return to main menu
                     mainMenu();
-                    break;
+                    strcpy(currentUser, NULL);
                 default:
                     printf("\nInvalid choice. Please try again.\n");
             }
-        } while (choice != 10);
     }
 
     void regTutor() {
@@ -485,9 +483,10 @@ char currentUser[20];
     void tutorMenu() {
         int choice;
         printf(BOLD UDL YEL "\nTutor Menu " RESET UDL"- Logged in as " BOLD BLU "%s (%s)\n" RESET, lookupTutorName(currentUser), currentUser);
-        printf("___________\n");
+        printf("\n");
         printf("1. View sessions assigned to me\n");
-        printf("2. Logout\n");
+        printf("2. View students in session\n");
+        printf("3. Logout\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
 
@@ -497,6 +496,11 @@ char currentUser[20];
                 viewTutorSessions();
                 tutorMenu;
             case 2:
+                //Function for viewing students in session
+                viewTutorSessions();
+                displaySessionStudents();
+                tutorMenu();
+            case 3:
                 //Logout, return to main menu
                 mainMenu();
                 strcpy(currentUser, NULL);

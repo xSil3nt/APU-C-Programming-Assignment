@@ -16,8 +16,10 @@
 #define UDL "\x1B[4m"
 
 
-void main(), pause(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), studentLogin(), studentMenu(), regTutor(), delTutor(), regStudent(), delStudent(), createSession(), displaySessions(), delSession(), displaySessionStudents(), adminEnrollStudent(), enrollStudent(), displayStudents(), studentEnrollStudent();
+void main(), pause(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), studentLogin(), studentMenu(), regTutor(), delTutor(), regStudent(), delStudent(), createSession(), displaySessions(), delSession(), displaySessionStudents(), adminEnrollStudent(), enrollStudent(), displayStudents();
 char* lookupStudentName();
+
+char currentUser[20];
 
     //Main Menu function
     void mainMenu() {
@@ -412,6 +414,8 @@ char* lookupStudentName();
             if (strcmp(username, user) == 0 && strcmp(hashedpass, pass) == 0) {
                 printf("\nLogin successful!\n");
                 fclose(tutorCreds);
+                //Set tutor as current user
+                strcpy(currentUser,username);
                 tutorMenu();
             }
         }
@@ -437,6 +441,7 @@ char* lookupStudentName();
             case 2:
                 //Logout, return to main menu
                 mainMenu();
+                strcpy(currentUser, NULL);
             default:
                 tutorMenu();
                 break;
@@ -446,8 +451,7 @@ char* lookupStudentName();
 
     void studentMenu() {
         int choice;
-        printf("\nStudent Menu\n");
-        printf("____________\n");
+        printf(BOLD UDL YEL "\nStudent Menu " RESET "- Logged in as " UDL BOLD BLU "%s (%s)\n" RESET, lookupStudentName(currentUser), currentUser);
         printf("1. View my sessions\n");
         printf("2. View all sessions\n");
         printf("3. Enroll in a session\n");
@@ -464,11 +468,11 @@ char* lookupStudentName();
                 displaySessions();
                 break;
             case 3:
-                studentEnrollStudent();
                 break;
             case 4:
                 //Logout, return to main menu
                 mainMenu();
+                strcpy(currentUser, NULL);
                 break;
             default:
                 studentMenu();
@@ -518,6 +522,8 @@ char* lookupStudentName();
             if (strcmp(username, user) == 0 && strcmp(hashedPass, pass) == 0) {
                 printf("\nLogin successful!\n");
                 fclose(studentCreds);
+                //Set current user to username
+                strcpy(currentUser, username);
                 studentMenu();
                 return;
             }
@@ -897,7 +903,7 @@ void enrollStudent(char *studentId) {
         fclose(students);
 
     }
-        
+
     void main() {
         //Program starts here
         mainMenu();

@@ -22,7 +22,7 @@ char securePass[25];
 #define UDL "\x1B[4m"
 
 
-void main(), pause(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), studentLogin(), studentMenu(), regTutor(), delTutor(), regStudent(), delStudent(), createSession(), displaySessions(), delSession(), displaySessionStudents(), adminEnrollStudent(), enrollStudent(), displayStudents(), viewTutorSessions();
+void main(), pause(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), studentLogin(), studentMenu(), regTutor(), delTutor(), regStudent(), delStudent(), createSession(), displaySessions(), delSession(), displaySessionStudents(), adminEnrollStudent(), enrollStudent(), displayStudents(), viewTutorSessions(), viewStudentSessions();
 char* lookupStudentName();
 char* lookupTutorName();
 char* secureInput();
@@ -524,7 +524,7 @@ char currentUser[20];
         switch (choice) {
             case 1:
                 //View my sessions
-
+                viewStudentSessions();
                 studentMenu();
             case 2:
                 //View all sessions
@@ -1007,6 +1007,38 @@ void enrollStudent(char *studentId) {
             }
         }
         fclose(sessions);
+    }
+
+    void viewStudentSessions() {
+        FILE *sessionStudents = fopen("sessionStudents.apdata", "r");
+        char line[100];
+        printf(MAG "\n%-10s %-15s %-20s %-20s %-10s %-10s %s\n", "Tutor ID", "Session ID", "Subject", "Tutor Name", "Day", "Time", "Location" RESET);
+        while(fgets(line, sizeof(line), sessionStudents)) {
+            if (strstr(line, currentUser)) {
+                char *selectSessionId = strtok(line, ";");
+                //Display list of sessions that match selected session ID
+
+                
+                FILE *sessions = fopen("sessions.apdata", "r");
+                char sessionLine[100];
+                while (fgets(sessionLine, sizeof(sessionLine), sessions)) {
+                        char *tutorId = strtok(sessionLine, ",");
+                        char *sessionId = strtok(NULL, ",");
+                        char *subject = strtok(NULL, ",");
+                        char *name = strtok(NULL, ",");
+                        char *day = strtok(NULL, ",");
+                        char *time = strtok(NULL, ",");
+                        char *location = strtok(NULL, "#");
+                    
+
+                    //Only show sessions that match the ones assigned to current student
+                    if (!strcmp(sessionId, selectSessionId)) {
+                        printf("%-10s %-15s %-20s %-20s %-10s %-10s %s\n", tutorId, sessionId, subject, name, day, time, location);
+                    }
+                }
+                fclose(sessions);
+            }
+        }
     }
 
     void main() {

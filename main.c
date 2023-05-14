@@ -451,7 +451,7 @@ char currentUser[20];
 
     void studentMenu() {
         int choice;
-        printf(BOLD UDL YEL "\nStudent Menu " RESET "- Logged in as " UDL BOLD BLU "%s (%s)\n" RESET, lookupStudentName(currentUser), currentUser);
+        printf(BOLD UDL YEL "\nStudent Menu " RESET UDL"- Logged in as " BOLD BLU "%s (%s)\n" RESET, lookupStudentName(currentUser), currentUser);
         printf("1. View my sessions\n");
         printf("2. View all sessions\n");
         printf("3. Enroll in a session\n");
@@ -462,13 +462,15 @@ char currentUser[20];
         switch (choice) {
             case 1:
                 //View my sessions
-                break;
+                
+                studentMenu();
             case 2:
                 //View all sessions
                 displaySessions();
-                break;
+                studentMenu();
             case 3:
-                break;
+                enrollStudent(currentUser);
+                studentMenu();
             case 4:
                 //Logout, return to main menu
                 mainMenu();

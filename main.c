@@ -1,7 +1,13 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <conio.h>
 #include "hash.h"
+
+char securePass[25];
+//Set max pass length to 24
+#define PASSWORD_LENGTH 24
+
 
 //Define colors to add some spice to outputs :D
 #define RED "\x1B[31m"
@@ -19,6 +25,7 @@
 void main(), pause(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), studentLogin(), studentMenu(), regTutor(), delTutor(), regStudent(), delStudent(), createSession(), displaySessions(), delSession(), displaySessionStudents(), adminEnrollStudent(), enrollStudent(), displayStudents(), viewTutorSessions();
 char* lookupStudentName();
 char* lookupTutorName();
+char* secureInput();
 
 char currentUser[20];
 
@@ -58,13 +65,62 @@ char currentUser[20];
         }
     }
 
+    char* secureInput() {
+        //Declare variables
+        int i = 0;
+        char password[PASSWORD_LENGTH + 1];
+        int input;
+        printf("\nEnter Password (Upto 24 characters): ");
+        while (i < PASSWORD_LENGTH) {
+            input = getch();
+            //Handle spaces and ESC character
+            if (input == ' ' || input == 27) {
+                continue;
+            
+            //Handle backspace char
+            } else if (input == '\b') {
+                //Trigger backspace if there are characters in the buffer, continue/ignore backspace otherwise
+                if (i > 0) {
+                    printf("\b \b");
+                    --i;
+                } else {
+                    continue;
+                }
+
+                //If enter key or tab is used, the loop ends, since that marks the end of the password
+            } else if (input == '\r' || input == '\t') {
+                break; 
+
+                //WEIRDEST bug I've ever seen, turns out CTRL+C = heart symbol, so it prevents exit. For some reason that = 3 ?????? wtf
+            } else if (input == 3) {
+                exit(0); 
+                
+                //Handle NULL char and extended ASCII (We don't want weird non standard ASCII in passwords)
+            } else if (input == 0 || input == 224) {
+                input= getch();
+                continue;
+            } else {
+                //If the character entered is a valid character (not a space, Backspace, Enter, Tab, null character or extended ASCII code)
+                //It is stored in the password buffer at position i, and i is incremented 
+                password[i++] = input;
+                printf("*");
+            }
+        }
+        //Set the char after the last char of the password to \0 (null) to indicate end of password
+        password[i] = '\0';
+        strcpy(securePass, password);
+
+        //Return password
+        return securePass;
+    }
+
     //Login function for admin, only requires a password, no username needed. Password is hardcoded abc
     //If correct password is entered, trigger admin menu, otherwise return to login screen
     void adminLogin() {
         //Declare variable for password input, and prompt for it
         char password[20];
-        printf("Enter admin password: ");
-        scanf("%s", password);
+        printf("Logging in as "BOLD RED"ADMIN\n"RESET);
+        strcpy(password, secureInput());
         
         //Check if input is = hardcoded password abc, strcmp returns 0 if strings match
         if (strcmp(password, "abc") == 0) {
@@ -379,10 +435,10 @@ char currentUser[20];
         //TODO: Maybe declare a const to store max input?
         char username[20], password[20], hashedpass[32];
         //Prompt for input
+        printf("Logging in as "BOLD GRN "TUTOR\n" RESET);
         printf("Enter your username: ");
         scanf("%s", username);
-        printf("Enter your password: ");
-        scanf("%s", password);
+        strcpy(password, secureInput());
 
         //Find hash of input password & String-ify
         sprintf(hashedpass, "%lu", hash(password));
@@ -492,10 +548,10 @@ char currentUser[20];
         //TODO: Maybe declare a const to store max input?
         char username[20], password[20], hashedPass[32];
         //Prompt for input
+        printf("Logging in as "BOLD GRN"STUDENT\n"RESET);
         printf("Enter your username: ");
         scanf("%s", username);
-        printf("Enter your password: ");
-        scanf("%s", password);
+        strcpy(password, secureInput());
 
         //Find hash of input password & String-ify
         sprintf(hashedPass, "%lu", hash(password));

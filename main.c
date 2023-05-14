@@ -16,7 +16,7 @@
 #define UDL "\x1B[4m"
 
 
-void main(), pause(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), studentLogin(), studentMenu(), regTutor(), delTutor(), regStudent(), delStudent(), createSession(), displaySessions(), delSession(), displaySessionStudents(), adminEnrollStudent(), enrollStudent(), displayStudents();
+void main(), pause(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), studentLogin(), studentMenu(), regTutor(), delTutor(), regStudent(), delStudent(), createSession(), displaySessions(), delSession(), displaySessionStudents(), adminEnrollStudent(), enrollStudent(), displayStudents(), studentEnrollStudent();
 char* lookupStudentName();
 
     //Main Menu function
@@ -425,21 +425,55 @@ char* lookupStudentName();
         int choice;
         printf("Tutor Menu\n");
         printf("___________\n");
-        printf("1. View assigned sessions\n");
+        printf("1. View sessions assigned to me\n");
         printf("2. Logout\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                //Function for viewing sessions assigned to tutor
+                break;
+            case 2:
+                //Logout, return to main menu
+                mainMenu();
+            default:
+                tutorMenu();
+                break;
+        }
+    
     }
 
     void studentMenu() {
         int choice;
         printf("\nStudent Menu\n");
         printf("____________\n");
-        printf("1. View sessions\n");
-        printf("2. Enroll in a session\n");
-        printf("3. Logout\n");
+        printf("1. View my sessions\n");
+        printf("2. View all sessions\n");
+        printf("3. Enroll in a session\n");
+        printf("4. Logout\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                //View my sessions
+                break;
+            case 2:
+                //View all sessions
+                displaySessions();
+                break;
+            case 3:
+                studentEnrollStudent();
+                break;
+            case 4:
+                //Logout, return to main menu
+                mainMenu();
+                break;
+            default:
+                studentMenu();
+                break;
+        }
     }
 
     //Mostly a copy paste from tutorLogin function, should probably commonize but I'm currently a little lazy, perhaps a problem for future me

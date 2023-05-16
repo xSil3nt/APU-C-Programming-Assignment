@@ -25,6 +25,7 @@ char securePass[25];
 void main(), pause(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), studentLogin(), studentMenu(), regTutor(), delTutor(), regStudent(), delStudent(), createSession(), displaySessions(), delSession(), displaySessionStudents(), adminEnrollStudent(), enrollStudent(), displayStudents(), viewTutorSessions(), viewStudentSessions();
 char* lookupStudentName();
 char* lookupTutorName();
+char* lookupTutorSubject();
 char* secureInput();
 
 char currentUser[20];
@@ -96,7 +97,7 @@ char currentUser[20];
                 exit(0); 
                 
                 //Handle NULL char and extended ASCII (We don't want weird non standard ASCII in passwords)
-            } else if (input == 0 || input == 224) {
+            } else if (input == 0) {
                 input= getch();
                 continue;
             } else {
@@ -494,16 +495,18 @@ char currentUser[20];
             case 1:
                 //Function for viewing sessions assigned to tutor
                 viewTutorSessions();
-                tutorMenu;
+                pause();
+                tutorMenu();
             case 2:
                 //Function for viewing students in session
                 viewTutorSessions();
                 displaySessionStudents();
+                pause();
                 tutorMenu();
             case 3:
                 //Logout, return to main menu
+                strcpy(currentUser, "");
                 mainMenu();
-                strcpy(currentUser, NULL);
             default:
                 tutorMenu();
                 break;
@@ -525,20 +528,22 @@ char currentUser[20];
             case 1:
                 //View my sessions
                 viewStudentSessions();
+                pause();
                 studentMenu();
             case 2:
                 //View all sessions
                 displaySessions();
+                pause();
                 studentMenu();
             case 3:
                 //Enroll student into a session of their choice
                 enrollStudent(currentUser);
+                pause();
                 studentMenu();
             case 4:
                 //Logout, return to main menu
+                strcpy(currentUser, "");
                 mainMenu();
-                strcpy(currentUser, NULL);
-                break;
             default:
                 studentMenu();
                 break;
@@ -601,21 +606,20 @@ char currentUser[20];
 
     void createSession() {
         //Declare variables for session information
-        char tutorId[5];
+        char tutorId[10];
         char sessionId[10];
         char day[10];
         char time[10];
-        char location[20];
+        char location[10];
 
         //Display list of tutors and their subjects
         printf(MAG "\n%-10s %-20s %s\n", "Tutor ID", "Subject", "Tutor Name" RESET);
         FILE *tutors = fopen("tutors.apdata", "r");
-        char line[50];
+        char line[100];
         while (fgets(line, sizeof(line), tutors)) {
             char *id = strtok(line, ",");
-            char *nameAndSubject = strtok(NULL, "\n");
-            char *subject = strtok(nameAndSubject, ";");
             char *name = strtok(NULL, ";");
+            char *subject = strtok(NULL, "#");
             printf("%-10s %-20s %s\n", id, subject, name);
         }
         fclose(tutors);
@@ -626,20 +630,20 @@ char currentUser[20];
 
         //Check if tutor ID exists and if tutor already has a session
         tutors = fopen("tutors.apdata", "r");
-        char *subject = NULL;
-        char *name = NULL;
+        char *findSubject = NULL;
+        char *findName = NULL;
         char *existingSessionId = NULL;
         while (fgets(line, sizeof(line), tutors)) {
             char *id = strtok(line, ",");
             if (strcmp(id, tutorId) == 0) {
-                name = strtok(NULL, ";");
-                subject = strtok(NULL, "#");
+                findName = strtok(NULL, ";");
+                findSubject = strtok(NULL, "#");
                 break;
             }
         }
         fclose(tutors);
 
-        if (!name || !subject) {
+        if (!findName || !findSubject) {
             printf("\nTutor ID not found. Please try again.\n");
             return;
         }
@@ -662,7 +666,7 @@ char currentUser[20];
 
         //Prompt for session information
         printf("Enter session ID: ");
-        scanf("%s", sessionId);
+        scanf("%s", &sessionId);
 
         //Check if session ID is unique
         sessions = fopen("sessions.apdata", "r");
@@ -684,10 +688,31 @@ char currentUser[20];
         printf("Enter location: ");
         scanf("%s", location);
 
+        // Open students.apdata file
+        FILE *tutorsFile = fopen("tutors.apdata", "r");
+        char line2[100];
+        char tutorSubject[10];
+        // Find the line with the specified tutor ID
+        while (fgets(line2, sizeof(line2), tutorsFile)) {
+            char *searchId = strtok(line2, ",");
+            char *searchName = strtok(NULL, ";");
+            char *searchSubject = strtok(NULL, "#");
+            if (strcmp(searchId, tutorId) == 0) {
+                fclose(tutorsFile);
+                strcpy(tutorSubject,searchSubject);
+                break;
+            }
+        }
+        fclose(tutorsFile);
+
         //Write session to file
         sessions = fopen("sessions.apdata", "a");
-        fprintf(sessions, "%s,%s,%s,%s,%s,%s,%s#\n", tutorId, sessionId, subject, name, day, time, location);
+        fprintf(sessions, "%s,%s,%s,%s,%s,%s,%s#\n", tutorId, sessionId, tutorSubject, lookupTutorName(tutorId), day, time, location);
         fclose(sessions);
+
+        FILE *sessionStudents = fopen("sessionStudents.apdata", "a");
+        fprintf(sessionStudents, "%s;TP000\n", sessionId);
+        fclose(sessionStudents);
 
         printf("\nSession created successfully.\n");
     }
@@ -814,13 +839,31 @@ char currentUser[20];
         // Open students.apdata file
         FILE *tutorsFile = fopen("tutors.apdata", "r");
         char line[100];
-        // Find the line with the specified student ID
+        // Find the line with the specified tutor ID
         while (fgets(line, sizeof(line), tutorsFile)) {
             char *id = strtok(line, ",");
             char *name = strtok(NULL, ";");
             if (strcmp(id, tutorId) == 0) {
                 fclose(tutorsFile);
                 return name;
+            }
+        }
+        fclose(tutorsFile);
+        return NULL;
+    }
+
+    char* lookupTutorSubject(char *tutorId) {
+        // Open students.apdata file
+        FILE *tutorsFile = fopen("tutors.apdata", "r");
+        char line[100];
+        // Find the line with the specified tutor ID
+        while (fgets(line, sizeof(line), tutorsFile)) {
+            char *id = strtok(line, ",");
+            char *name = strtok(NULL, ";");
+            char *subject = strtok(NULL, "#");
+            if (strcmp(id, tutorId) == 0) {
+                fclose(tutorsFile);
+                return subject;
             }
         }
         fclose(tutorsFile);
@@ -856,7 +899,6 @@ char currentUser[20];
                     }
                 }
                 fclose(sessionStudents);
-                pause();
                 return;
             }
         }
@@ -920,16 +962,19 @@ void enrollStudent(char *studentId) {
     FILE *sessionStudents = fopen("sessionStudents.apdata", "r");
     FILE *tempFile = fopen("tempSessionStudents.apdata", "w");
     char sessionLine[100];
-    int sessionFound, alreadyExists = 0;
+    int sessionFound, success;
+    sessionFound = 0;
     while (fgets(sessionLine, sizeof(sessionLine), sessionStudents)) {
+        success = 0;
         char *session = strtok(sessionLine, ";");
         char *studentList = strtok(NULL, "\n");
-        if (strcmp(session, sessionId) == 0) {
+        if (strcmp(session, sessionId) == 0) { //If this is the session we want, set sessionfound to 1
             sessionFound = 1;
-            if (strstr(studentList,studentId) == NULL) {
+            if (!strstr(studentList,studentId)) { //If studentId is NOT in student list, add to list and throw in file
                 fprintf(tempFile, "%s;%s,%s\n", session, studentList, studentId);
-            } else {
-                alreadyExists = 1;
+                printf("\n%s (%s) has been enrolled in session %s.\n", lookupStudentName(studentId), studentId, sessionId);
+            } else if (strstr(studentList,studentId)) { //If studentId is already part of the session, keep the line as is
+                printf("\n%s (%s) is already enrolled in %s\n", lookupStudentName(studentId), studentId, sessionId);
                 fprintf(tempFile, "%s;%s\n", session, studentList);
             }
                 
@@ -947,12 +992,6 @@ void enrollStudent(char *studentId) {
     if (!sessionFound) {
         printf("\nSession ID not found in sessionStudents.apdata. Returning to menu.\n");
         return;
-    }
-    if (alreadyExists = 1) {
-        printf("\n%s (%s) is already enrolled in %s\n", lookupStudentName(studentId), studentId, sessionId);
-        return;
-    } else {
-        printf("\n%s (%s) has been enrolled in session %s.\n", lookupStudentName(studentId), studentId, sessionId);
     }
     
 }
@@ -1007,6 +1046,7 @@ void enrollStudent(char *studentId) {
             }
         }
         fclose(sessions);
+        return;
     }
 
     void viewStudentSessions() {
@@ -1039,6 +1079,7 @@ void enrollStudent(char *studentId) {
                 fclose(sessions);
             }
         }
+        return;
     }
 
     void main() {

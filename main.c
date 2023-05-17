@@ -99,7 +99,7 @@ char currentUser[MAX_PASS_USER];
             } else if (input == 3) {
                 exit(0); 
                 
-                //Handle NULL char and extended ASCII (We don't want weird non standard ASCII in passwords)
+                //Handle NULL char
             } else if (input == 0) {
                 input= getch();
                 continue;
@@ -131,7 +131,7 @@ char currentUser[MAX_PASS_USER];
             adminMenu();
         } else {
             //Call function again after throwing error if incorrect password is entered
-            printf("Incorrect password. Please try again.\n");
+            printf(RED "Incorrect password. Please try again.\n" RESET);
             adminLogin();
         }
     }
@@ -140,8 +140,8 @@ char currentUser[MAX_PASS_USER];
         //Declare var for selection
         int choice;
             //Show prompt
-            printf("\nAdmin Menu\n");
-            printf("___________\n");
+            printf(RED BOLD UDL"\nAdmin Menu\n" RESET);
+            printf("\n");
             printf("1. Register tutor\n");
             printf("2. Register student\n");
             printf("3. Remove tutor\n");
@@ -207,7 +207,7 @@ char currentUser[MAX_PASS_USER];
                     mainMenu();
                     strcpy(currentUser, "");
                 default:
-                    printf("\nInvalid choice. Please try again.\n");
+                    printf(RED "\nInvalid choice. Please try again.\n" RESET);
             }
     }
 
@@ -255,7 +255,7 @@ char currentUser[MAX_PASS_USER];
         fprintf(tutors, "%s,%s;%s#\n", tutorId, tutorName, tutorSubject);
         fclose(tutors);
 
-        printf("\nTutor added successfully.\n");
+        printf(GRN BOLD"\nTutor added successfully.\n" RESET);
     }
 
     void delTutor() {
@@ -323,7 +323,7 @@ char currentUser[MAX_PASS_USER];
         remove("tutorCreds.apdata");
         rename("temp.apdata", "tutorCreds.apdata");
 
-        printf("\nTutor deleted successfully. Don't forget to delete sessions corresponding to this tutor if needed.\n");
+        printf(GRN BOLD"\nTutor deleted successfully." UDL "Don't forget to delete sessions corresponding to this tutor if needed.\n" RESET);
     }
 
     void regStudent() {
@@ -367,7 +367,7 @@ char currentUser[MAX_PASS_USER];
         fprintf(students, "%s,%s#\n", studentId, studentName);
         fclose(students);
 
-        printf("\nStudent added successfully.\n");
+        printf(GRN BOLD"\nStudent added successfully.\n"RESET);
     }
 
 
@@ -436,7 +436,7 @@ char currentUser[MAX_PASS_USER];
         remove("studentCreds.apdata");
         rename("temp.apdata", "studentCreds.apdata");
 
-        printf("\nStudent deleted successfully.\n");
+        printf(GRN BOLD"\nStudent deleted successfully.\n" RESET);
     }
 
     void tutorLogin() {
@@ -480,7 +480,7 @@ char currentUser[MAX_PASS_USER];
 
             //Compare entered details with the ones from the file at the current line, if they match, trigger the tutorMenu
             if (strcmp(username, user) == 0 && strcmp(hashedpass, pass) == 0) {
-                printf("\nLogin successful!\n");
+                printf(GRN BOLD "\nLogin successful!\n" RESET);
                 fclose(tutorCreds);
                 //Set tutor as current user
                 strcpy(currentUser,username);
@@ -488,7 +488,7 @@ char currentUser[MAX_PASS_USER];
             }
         }
         //We will exit the loop naturally if we don't find matching credentials, so ask the user to try again.
-        printf("\nInvalid username or password. Please try again.\n");
+        printf(RED "\nInvalid username or password. Please try again.\n" RESET);
         fclose(tutorCreds);
         tutorLogin();
     }
@@ -602,7 +602,7 @@ char currentUser[MAX_PASS_USER];
 
             //Compare entered details with the ones from the file at the current line, if they match, trigger the studentMenu
             if (strcmp(username, user) == 0 && strcmp(hashedPass, pass) == 0) {
-                printf("\nLogin successful!\n");
+                printf(GRN BOLD "\nLogin successful!\n" RESET);
                 fclose(studentCreds);
                 //Set current user to username
                 strcpy(currentUser, username);
@@ -611,7 +611,7 @@ char currentUser[MAX_PASS_USER];
             }
         }
         //We will exit the loop naturally if we don't find matching credentials, so ask the user to try again.
-        printf("\nInvalid username or password. Please try again.\n");
+        printf(RED "\nInvalid username or password. Please try again.\n" RESET);
         fclose(studentCreds);
         studentLogin();
     }
@@ -726,12 +726,12 @@ char currentUser[MAX_PASS_USER];
         fprintf(sessionStudents, "%s;TP000\n", sessionId);
         fclose(sessionStudents);
 
-        printf("\nSession created successfully.\n");
+        printf(GRN BOLD "\nSession created successfully.\n" RESET);
     }
 
     void displaySessions() {
         //Display list of sessions
-        printf(MAG "\n%-10s %-15s %-20s %-20s %-10s %-10s %s\n", "Tutor ID", "Session ID", "Subject", "Tutor Name", "Day", "Time", "Location" RESET);
+        printf(MAG BOLD UDL "\n%-10s %-15s %-20s %-20s %-10s %-10s %s\n", "Tutor ID", "Session ID", "Subject", "Tutor Name", "Day", "Time", "Location" RESET);
         FILE *sessions = fopen("sessions.apdata", "r");
         char line[MAX_LINE];
         while (fgets(line, sizeof(line), sessions)) {
@@ -821,7 +821,7 @@ char currentUser[MAX_PASS_USER];
         rename("temp.apdata", "sessions.apdata");
 
 
-        printf("\nSession deleted successfully.\n");
+        printf(GRN BOLD "\nSession deleted successfully.\n" RESET);
     }
 
     void pause() {
@@ -1039,7 +1039,7 @@ void enrollStudent(char *studentId) {
 
     void viewTutorSessions() {
         //Display list of sessions
-        printf(MAG "\n%-10s %-15s %-20s %-20s %-10s %-10s %s\n", "Tutor ID", "Session ID", "Subject", "Tutor Name", "Day", "Time", "Location" RESET);
+        printf(MAG BOLD UDL "\n%-10s %-15s %-20s %-20s %-10s %-10s %s\n", "Tutor ID", "Session ID", "Subject", "Tutor Name", "Day", "Time", "Location" RESET);
         FILE *sessions = fopen("sessions.apdata", "r");
         char line[MAX_LINE];
         while (fgets(line, sizeof(line), sessions)) {
@@ -1064,7 +1064,7 @@ void enrollStudent(char *studentId) {
     void viewStudentSessions() {
         FILE *sessionStudents = fopen("sessionStudents.apdata", "r");
         char line[MAX_LINE];
-        printf(MAG "\n%-10s %-15s %-20s %-20s %-10s %-10s %s\n", "Tutor ID", "Session ID", "Subject", "Tutor Name", "Day", "Time", "Location" RESET);
+        printf(MAG BOLD UDL "\n%-10s %-15s %-20s %-20s %-10s %-10s %s\n", "Tutor ID", "Session ID", "Subject", "Tutor Name", "Day", "Time", "Location" RESET);
         while(fgets(line, sizeof(line), sessionStudents)) {
             if (strstr(line, currentUser)) {
                 char *selectSessionId = strtok(line, ";");

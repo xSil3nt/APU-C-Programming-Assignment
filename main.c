@@ -193,7 +193,7 @@ char currentUser[20];
                 case 10:
                     //Logout, return to main menu
                     mainMenu();
-                    strcpy(currentUser, NULL);
+                    strcpy(currentUser, "");
                 default:
                     printf("\nInvalid choice. Please try again.\n");
             }

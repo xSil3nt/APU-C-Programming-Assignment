@@ -216,7 +216,7 @@ char currentUser[MAX_PASS_USER];
         char tutorId[MAX_ID], tutorPass[MAX_PASS_USER], tutorName[MAX_NAME_LEN], tutorSubject[MAX_NAME_LEN], hashedPass[32];
 
         //Prompt for tutor ID
-        printf("\nEnter tutor ID: ");
+        printf("\nEnter tutor ID (Case sensitive): ");
         scanf("%s", tutorId);
 
         //Check if tutor ID is already in use
@@ -233,7 +233,7 @@ char currentUser[MAX_PASS_USER];
         fclose(tutorCreds);
 
         //Prompt for tutor details
-        printf("Enter tutor password: ");
+        printf("Enter tutor password (Case sensitive): ");
         scanf("%s", tutorPass);
         printf("Enter tutor name: ");
         getchar(); // consume the newline character left in the input buffer
@@ -263,7 +263,7 @@ char currentUser[MAX_PASS_USER];
         char tutorId[MAX_ID];
 
         //Prompt for tutor ID
-        printf("\nEnter tutor ID: ");
+        printf("\nEnter tutor ID (Case sensitive): ");
         scanf("%s", tutorId);
 
         //Check if tutor ID exists
@@ -331,7 +331,7 @@ char currentUser[MAX_PASS_USER];
         char studentId[MAX_ID], studentPass[MAX_PASS_USER], studentName[MAX_PASS_USER], hashedPass[32];
 
         //Prompt for student ID
-        printf("\nEnter student ID: ");
+        printf("\nEnter student ID (Case sensitive): ");
         scanf("%s", studentId);
 
         //Check if student ID is already in use
@@ -348,7 +348,7 @@ char currentUser[MAX_PASS_USER];
         fclose(studentCreds);
 
         //Prompt for student details
-        printf("Enter student password: ");
+        printf("Enter student password (Case sensitive): ");
         scanf("%s", studentPass);
         printf("Enter student name: ");
         getchar(); // consume the newline character left in the input buffer
@@ -376,7 +376,7 @@ char currentUser[MAX_PASS_USER];
         char studentId[MAX_ID];
 
         //Prompt for student ID
-        printf("\nEnter student ID: ");
+        printf("\nEnter student ID (Case sensitive): ");
         scanf("%s", studentId);
 
         //Check if student ID exists
@@ -447,7 +447,7 @@ char currentUser[MAX_PASS_USER];
         char username[MAX_PASS_USER], password[MAX_PASS_USER], hashedpass[32];
         //Prompt for input
         printf("Logging in as "BOLD GRN "TUTOR\n" RESET);
-        printf("Enter your username: ");
+        printf("Enter your username (Case sensitive): ");
         scanf("%s", username);
         strcpy(password, secureInput());
 
@@ -570,7 +570,7 @@ char currentUser[MAX_PASS_USER];
         char username[MAX_PASS_USER], password[MAX_PASS_USER], hashedPass[32];
         //Prompt for input
         printf("Logging in as "BOLD GRN"STUDENT\n"RESET);
-        printf("Enter your username: ");
+        printf("Enter your username (Case sensitive): ");
         scanf("%s", username);
         strcpy(password, secureInput());
 
@@ -637,7 +637,7 @@ char currentUser[MAX_PASS_USER];
         fclose(tutors);
 
         //Prompt for tutor ID
-        printf("\nEnter tutor ID: ");
+        printf("\nEnter tutor ID (Case sensitive): ");
         scanf("%s", tutorId);
 
         //Check if tutor ID exists and if tutor already has a session
@@ -677,7 +677,7 @@ char currentUser[MAX_PASS_USER];
         }
 
         //Prompt for session information
-        printf("Enter session ID: ");
+        printf("Enter session ID (Case sensitive): ");
         scanf("%s", &sessionId);
 
         //Check if session ID is unique
@@ -761,7 +761,7 @@ char currentUser[MAX_PASS_USER];
 
         //Prompt for session ID
         char sessionId[MAX_ID];
-        printf("\nEnter session ID: ");
+        printf("\nEnter session ID (Case sensitive): ");
         scanf("%s", sessionId);
 
         //Check if session ID exists
@@ -884,7 +884,7 @@ char currentUser[MAX_PASS_USER];
 
     void displaySessionStudents() {
         char sessionId[MAX_ID];
-        printf("Enter session ID: ");
+        printf("Enter session ID (Case sensitive): ");
         scanf("%s", sessionId);
 
         // Open sessionStudents.apdata file
@@ -922,7 +922,7 @@ char currentUser[MAX_PASS_USER];
     void adminEnrollStudent() {
         char selectedStudentId[MAX_ID];
         displayStudents();
-        printf(YEL "Enter a student id to enroll: " RESET);
+        printf(YEL "Enter a student id to enroll (Case sensitive): " RESET);
         scanf("%s",selectedStudentId);
         
         //Check if student ID exists
@@ -949,7 +949,7 @@ void enrollStudent(char *studentId) {
     char sessionId[MAX_ID];
 
     displaySessions();
-    printf("Enter Session ID to enroll %s (%s) to: ", lookupStudentName(studentId), studentId);
+    printf("Enter Session ID to enroll %s (%s) to (Case sensitive): ", lookupStudentName(studentId), studentId);
     scanf("%s", sessionId);
 
     //Check if session ID exists

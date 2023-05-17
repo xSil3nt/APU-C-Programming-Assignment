@@ -984,9 +984,9 @@ void enrollStudent(char *studentId) {
             sessionFound = 1;
             if (!strstr(studentList,studentId)) { //If studentId is NOT in student list, add to list and throw in file
                 fprintf(tempFile, "%s;%s,%s\n", session, studentList, studentId);
-                printf("\n%s (%s) has been enrolled in session %s.\n", lookupStudentName(studentId), studentId, sessionId);
+                printf(GRN BOLD "\n%s (%s) has been enrolled in session %s.\n" RESET, lookupStudentName(studentId), studentId, sessionId);
             } else if (strstr(studentList,studentId)) { //If studentId is already part of the session, keep the line as is
-                printf("\n%s (%s) is already enrolled in %s\n", lookupStudentName(studentId), studentId, sessionId);
+                printf(YEL BOLD "\n%s (%s) is already enrolled in %s\n" RESET, lookupStudentName(studentId), studentId, sessionId);
                 fprintf(tempFile, "%s;%s\n", session, studentList);
             }
                 

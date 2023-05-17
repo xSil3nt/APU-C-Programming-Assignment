@@ -4,10 +4,12 @@
 #include <conio.h>
 #include "hash.h"
 
-char securePass[25];
-//Set max pass length to 24
+//Set constants for variable lengths
 #define PASSWORD_LENGTH 24
-
+#define MAX_PASS_USER 25
+#define MAX_LINE 200
+#define MAX_ID 10
+#define MAX_NAME_LEN 25
 
 //Define colors to add some spice to outputs :D
 #define RED "\x1B[31m"
@@ -21,6 +23,7 @@ char securePass[25];
 #define BOLD "\x1B[1m"
 #define UDL "\x1B[4m"
 
+char securePass[25];
 
 void main(), pause(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), studentLogin(), studentMenu(), regTutor(), delTutor(), regStudent(), delStudent(), createSession(), displaySessions(), delSession(), displaySessionStudents(), adminEnrollStudent(), enrollStudent(), displayStudents(), viewTutorSessions(), viewStudentSessions();
 char* lookupStudentName();
@@ -28,7 +31,7 @@ char* lookupTutorName();
 char* lookupTutorSubject();
 char* secureInput();
 
-char currentUser[20];
+char currentUser[MAX_PASS_USER];
 
     //Main Menu function
     void mainMenu() {
@@ -119,7 +122,7 @@ char currentUser[20];
     //If correct password is entered, trigger admin menu, otherwise return to login screen
     void adminLogin() {
         //Declare variable for password input, and prompt for it
-        char password[20];
+        char password[MAX_PASS_USER];
         printf("Logging in as "BOLD RED"ADMIN\n"RESET);
         strcpy(password, secureInput());
         
@@ -156,39 +159,48 @@ char currentUser[20];
                 case 1:
                     //Call function to register tutor
                     regTutor();
+                    pause();
                     adminMenu();
                 case 2:
                     //Call function to register student
                     regStudent();
+                    pause();
                     adminMenu();
                 case 3:
                     //Call function to remove tutor
                     delTutor();
+                    pause();
                     adminMenu();
                 case 4:
                     //Call function to remove student
                     delStudent();
+                    pause();
                     adminMenu();
                 case 5:
                     //Call function to add session
                     createSession();
+                    pause();
                     adminMenu();
                 case 6:
                     //Call function to enroll student to session
                     adminEnrollStudent();
+                    pause();
                     adminMenu();
                 case 7:
                     //Call function to display sessions
                     displaySessions();
+                    pause();
                     adminMenu();
                 case 8:
                     //Call function to delete session
                     delSession();
+                    pause();
                     adminMenu();
                 case 9:
                     //Call function to show students assigned to a specific session
                     displaySessions();
                     displaySessionStudents();
+                    pause();
                     adminMenu();
                 case 10:
                     //Logout, return to main menu
@@ -201,7 +213,7 @@ char currentUser[20];
 
     void regTutor() {
         //Declare variables for tutor details
-        char tutorId[5], tutorPass[20], tutorName[50], tutorSubject[50], hashedPass[32];
+        char tutorId[MAX_ID], tutorPass[MAX_PASS_USER], tutorName[MAX_NAME_LEN], tutorSubject[MAX_NAME_LEN], hashedPass[32];
 
         //Prompt for tutor ID
         printf("\nEnter tutor ID: ");
@@ -209,7 +221,7 @@ char currentUser[20];
 
         //Check if tutor ID is already in use
         FILE *tutorCreds = fopen("tutorCreds.apdata", "r");
-        char line[50];
+        char line[MAX_LINE];
         while (fgets(line, sizeof(line), tutorCreds)) {
             char *id = strtok(line, ",");
             if (strcmp(id, tutorId) == 0) {
@@ -248,7 +260,7 @@ char currentUser[20];
 
     void delTutor() {
         //Declare variables for tutor ID
-        char tutorId[5];
+        char tutorId[MAX_ID];
 
         //Prompt for tutor ID
         printf("\nEnter tutor ID: ");
@@ -256,7 +268,7 @@ char currentUser[20];
 
         //Check if tutor ID exists
         FILE *tutors = fopen("tutors.apdata", "r");
-        char line[50];
+        char line[MAX_LINE];
         int found = 0;
         while (fgets(line, sizeof(line), tutors)) {
             char *id = strtok(line, ",");
@@ -316,7 +328,7 @@ char currentUser[20];
 
     void regStudent() {
         //Declare variables for student details
-        char studentId[10], studentPass[20], studentName[50], hashedPass[32];
+        char studentId[MAX_ID], studentPass[MAX_PASS_USER], studentName[MAX_PASS_USER], hashedPass[32];
 
         //Prompt for student ID
         printf("\nEnter student ID: ");
@@ -324,7 +336,7 @@ char currentUser[20];
 
         //Check if student ID is already in use
         FILE *studentCreds = fopen("studentCreds.apdata", "r");
-        char line[50];
+        char line[MAX_LINE];
         while (fgets(line, sizeof(line), studentCreds)) {
             char *id = strtok(line, ",");
             if (strcmp(id, studentId) == 0) {
@@ -361,7 +373,7 @@ char currentUser[20];
 
     void delStudent() {
         //Declare variables for student ID
-        char studentId[10];
+        char studentId[MAX_ID];
 
         //Prompt for student ID
         printf("\nEnter student ID: ");
@@ -369,7 +381,7 @@ char currentUser[20];
 
         //Check if student ID exists
         FILE *students = fopen("students.apdata", "r");
-        char line[100];
+        char line[MAX_LINE];
         int found = 0;
         while (fgets(line, sizeof(line), students)) {
             char *id = strtok(line, ",");
@@ -432,7 +444,7 @@ char currentUser[20];
         //TODO: Maybe commonize tutor and student login? Dunno how much work that will be, decide later?? 
         //Declare variables for input, 20 characters should be enough
         //TODO: Maybe declare a const to store max input?
-        char username[20], password[20], hashedpass[32];
+        char username[MAX_PASS_USER], password[MAX_PASS_USER], hashedpass[32];
         //Prompt for input
         printf("Logging in as "BOLD GRN "TUTOR\n" RESET);
         printf("Enter your username: ");
@@ -452,7 +464,7 @@ char currentUser[20];
 
         //The file stores each set of credentials in a line, # marks the end of the line, commas seperate the credentials by type.
         //Char array to store lines of the file as we loop through the file to find the password and username
-        char line[100];
+        char line[MAX_LINE];
         //Decare pointers to store user and pass found in the file
         char *user, *pass;
         
@@ -555,7 +567,7 @@ char currentUser[20];
         //Function for logging in students 
         //Declare variables for input, 20 characters should be enough
         //TODO: Maybe declare a const to store max input?
-        char username[20], password[20], hashedPass[32];
+        char username[MAX_PASS_USER], password[MAX_PASS_USER], hashedPass[32];
         //Prompt for input
         printf("Logging in as "BOLD GRN"STUDENT\n"RESET);
         printf("Enter your username: ");
@@ -574,7 +586,7 @@ char currentUser[20];
 
         //The file stores each set of credentials in a line, # marks the end of the line, commas seperate the credentials by type.
         //Char array to store lines of the file as we loop through the file to find the password and username
-        char line[100];
+        char line[MAX_LINE];
         //Decare pointers to store user and pass found in the file
         char *user, *pass;
         
@@ -606,16 +618,16 @@ char currentUser[20];
 
     void createSession() {
         //Declare variables for session information
-        char tutorId[10];
-        char sessionId[10];
-        char day[10];
-        char time[10];
-        char location[10];
+        char tutorId[MAX_ID];
+        char sessionId[MAX_ID];
+        char day[MAX_NAME_LEN];
+        char time[MAX_NAME_LEN];
+        char location[MAX_NAME_LEN];
 
         //Display list of tutors and their subjects
         printf(MAG "\n%-10s %-20s %s\n", "Tutor ID", "Subject", "Tutor Name" RESET);
         FILE *tutors = fopen("tutors.apdata", "r");
-        char line[100];
+        char line[MAX_LINE];
         while (fgets(line, sizeof(line), tutors)) {
             char *id = strtok(line, ",");
             char *name = strtok(NULL, ";");
@@ -690,8 +702,8 @@ char currentUser[20];
 
         // Open students.apdata file
         FILE *tutorsFile = fopen("tutors.apdata", "r");
-        char line2[100];
-        char tutorSubject[10];
+        char line2[MAX_LINE];
+        char tutorSubject[MAX_NAME_LEN];
         // Find the line with the specified tutor ID
         while (fgets(line2, sizeof(line2), tutorsFile)) {
             char *searchId = strtok(line2, ",");
@@ -721,7 +733,7 @@ char currentUser[20];
         //Display list of sessions
         printf(MAG "\n%-10s %-15s %-20s %-20s %-10s %-10s %s\n", "Tutor ID", "Session ID", "Subject", "Tutor Name", "Day", "Time", "Location" RESET);
         FILE *sessions = fopen("sessions.apdata", "r");
-        char line[100];
+        char line[MAX_LINE];
         while (fgets(line, sizeof(line), sessions)) {
             char *tutorId = strtok(line, ",");
             char *sessionId = strtok(NULL, ",");
@@ -748,13 +760,13 @@ char currentUser[20];
         displaySessions();
 
         //Prompt for session ID
-        char sessionId[10];
+        char sessionId[MAX_ID];
         printf("\nEnter session ID: ");
         scanf("%s", sessionId);
 
         //Check if session ID exists
         FILE *sessions = fopen("sessions.apdata", "r");
-        char line[100];
+        char line[MAX_LINE];
         int sessionFound = 0;
         while (fgets(line, sizeof(line), sessions)) {
             char *sessionSessionId = strtok(line, ",");
@@ -821,7 +833,7 @@ char currentUser[20];
     char* lookupStudentName(char *studentId) {
         // Open students.apdata file
         FILE *studentsFile = fopen("students.apdata", "r");
-        char line[100];
+        char line[MAX_LINE];
         // Find the line with the specified student ID
         while (fgets(line, sizeof(line), studentsFile)) {
             char *id = strtok(line, ",");
@@ -838,7 +850,7 @@ char currentUser[20];
     char* lookupTutorName(char *tutorId) {
         // Open students.apdata file
         FILE *tutorsFile = fopen("tutors.apdata", "r");
-        char line[100];
+        char line[MAX_LINE];
         // Find the line with the specified tutor ID
         while (fgets(line, sizeof(line), tutorsFile)) {
             char *id = strtok(line, ",");
@@ -855,7 +867,7 @@ char currentUser[20];
     char* lookupTutorSubject(char *tutorId) {
         // Open students.apdata file
         FILE *tutorsFile = fopen("tutors.apdata", "r");
-        char line[100];
+        char line[MAX_LINE];
         // Find the line with the specified tutor ID
         while (fgets(line, sizeof(line), tutorsFile)) {
             char *id = strtok(line, ",");
@@ -871,13 +883,13 @@ char currentUser[20];
     }
 
     void displaySessionStudents() {
-        char sessionId[10];
+        char sessionId[MAX_ID];
         printf("Enter session ID: ");
         scanf("%s", sessionId);
 
         // Open sessionStudents.apdata file
         FILE *sessionStudents = fopen("sessionStudents.apdata", "r");
-        char line[100];
+        char line[MAX_LINE];
 
         // Find the line with the specified session ID
         while (fgets(line, sizeof(line), sessionStudents)) {
@@ -887,7 +899,7 @@ char currentUser[20];
                 printf("Students assigned to session " RED "%s" RESET ":\n", sessionId);
                 char *student = strtok(students, ", ");
                 int count = 0;
-                char *studentIdList[100];
+                char *studentIdList[MAX_LINE];
                 while (student != NULL) {
                     studentIdList[count] = student;
                     count++;
@@ -908,14 +920,14 @@ char currentUser[20];
     }
 
     void adminEnrollStudent() {
-        char selectedStudentId[10];
+        char selectedStudentId[MAX_ID];
         displayStudents();
         printf(YEL "Enter a student id to enroll: " RESET);
         scanf("%s",selectedStudentId);
         
         //Check if student ID exists
         FILE *students = fopen("students.apdata", "r");
-        char line[100];
+        char line[MAX_LINE];
         int found = 0;
         while (fgets(line, sizeof(line), students)) {
             char *id = strtok(line, ",");
@@ -934,7 +946,7 @@ char currentUser[20];
     }
 
 void enrollStudent(char *studentId) {
-    char sessionId[10];
+    char sessionId[MAX_ID];
 
     displaySessions();
     printf("Enter Session ID to enroll %s (%s) to: ", lookupStudentName(studentId), studentId);
@@ -942,7 +954,7 @@ void enrollStudent(char *studentId) {
 
     //Check if session ID exists
     FILE *sessions = fopen("sessionStudents.apdata", "r");
-    char line[100];
+    char line[MAX_LINE];
     int found = 0;
     while (fgets(line, sizeof(line), sessions)) {
         char *id = strtok(line, ";");
@@ -961,7 +973,7 @@ void enrollStudent(char *studentId) {
     //Add studentId to sessionStudents.apdata file
     FILE *sessionStudents = fopen("sessionStudents.apdata", "r");
     FILE *tempFile = fopen("tempSessionStudents.apdata", "w");
-    char sessionLine[100];
+    char sessionLine[MAX_LINE];
     int sessionFound, success;
     sessionFound = 0;
     while (fgets(sessionLine, sizeof(sessionLine), sessionStudents)) {
@@ -1007,7 +1019,7 @@ void enrollStudent(char *studentId) {
         }
 
         // Declare a buffer to store each line read from the file
-        char line[100];
+        char line[MAX_LINE];
 
         // Read each line and extract the studentId and studentName
         printf(MAG "\nStudent ID\tStudent Name\n" RESET);
@@ -1029,7 +1041,7 @@ void enrollStudent(char *studentId) {
         //Display list of sessions
         printf(MAG "\n%-10s %-15s %-20s %-20s %-10s %-10s %s\n", "Tutor ID", "Session ID", "Subject", "Tutor Name", "Day", "Time", "Location" RESET);
         FILE *sessions = fopen("sessions.apdata", "r");
-        char line[100];
+        char line[MAX_LINE];
         while (fgets(line, sizeof(line), sessions)) {
             char *tutorId = strtok(line, ",");
             char *sessionId = strtok(NULL, ",");
@@ -1051,7 +1063,7 @@ void enrollStudent(char *studentId) {
 
     void viewStudentSessions() {
         FILE *sessionStudents = fopen("sessionStudents.apdata", "r");
-        char line[100];
+        char line[MAX_LINE];
         printf(MAG "\n%-10s %-15s %-20s %-20s %-10s %-10s %s\n", "Tutor ID", "Session ID", "Subject", "Tutor Name", "Day", "Time", "Location" RESET);
         while(fgets(line, sizeof(line), sessionStudents)) {
             if (strstr(line, currentUser)) {
@@ -1060,7 +1072,7 @@ void enrollStudent(char *studentId) {
 
                 
                 FILE *sessions = fopen("sessions.apdata", "r");
-                char sessionLine[100];
+                char sessionLine[MAX_LINE];
                 while (fgets(sessionLine, sizeof(sessionLine), sessions)) {
                         char *tutorId = strtok(sessionLine, ",");
                         char *sessionId = strtok(NULL, ",");

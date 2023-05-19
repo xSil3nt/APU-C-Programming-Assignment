@@ -1003,9 +1003,14 @@ void enrollStudent(char *studentId) {
     }
     fclose(sessionStudents);
     fclose(tempFile);
-    printf("");
+    _fcloseall();
     //Replace original file with temporary file
-    remove("sessionStudents.apdata");
+    int removeStatus = remove("sessionStudents.apdata");
+    if (removeStatus == 0) {
+        printf("");
+    } else {
+        printf("Error: unable to delete file, please delete tempSessionStudents.apdata manually and restart the program");
+    } 
     rename("tempSessionStudents.apdata", "sessionStudents.apdata");
 
     if (!sessionFound) {

@@ -914,7 +914,7 @@ char currentUser[MAX_PASS_USER];
                 }
                 for (int i = 0; i < count; i++) {
                     if (lookupStudentName(studentIdList[i]) != NULL) {
-                        printf(GRN "%s" RESET " - " BLU "%s\n" RESET, studentIdList[i], lookupStudentName(studentIdList[i]));
+                        printf(GRN "%s" RESET " - " CYN "%s\n" RESET, studentIdList[i], lookupStudentName(studentIdList[i]));
                     }
                 }
                 fclose(sessionStudents);

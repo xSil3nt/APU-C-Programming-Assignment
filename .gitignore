@@ -5,3 +5,5 @@ tempCodeRunnerFile.c
 pass.c 
 pass.exe
 *.tempCodeRunnerFile
+*.o
+*.exe

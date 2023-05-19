@@ -39,7 +39,14 @@ char currentUser[MAX_PASS_USER];
         int choice;
 
         //Show prompt
-        printf(BOLD UDL BLU "APU " CYN "Programming " GRN "Cafe\n\n" RESET);
+        //printf(BOLD UDL BLU "APU " CYN "Programming " GRN "Cafe\n\n" RESET);
+        printf(BLU BOLD" ,.  ;-.  .  .   ;-.                                               ,-.             \n");
+        printf("/  \\ |  ) |  |   |  )                                 o           /         ,-     \n");
+        printf("|--| |-'  |  |   |-'  ;-. ,-. ,-: ;-. ,-: ;-.-. ;-.-. . ;-. ,-:   |    ,-:  |  ,-. \n");
+        printf("|  | |    |  |   |    |   | | | | |   | | | | | | | | | | | | |   \\    | |  |- |-' \n");
+        printf("'  ' '    `--`   '    '   `-' `-| '   `-` ' ' ' ' ' ' ' ' ' `-|    `-' `-`  |  `-' \n");
+        printf("                              `-'                           `-'            -'      \n"RESET);
+        printf("");
         
         printf(YEL "1. Login as Admin\n" );
         printf("2. Login as Tutor\n" );

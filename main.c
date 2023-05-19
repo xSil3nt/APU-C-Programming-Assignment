@@ -1003,7 +1003,7 @@ void enrollStudent(char *studentId) {
     }
     fclose(sessionStudents);
     fclose(tempFile);
-
+    printf("");
     //Replace original file with temporary file
     remove("sessionStudents.apdata");
     rename("tempSessionStudents.apdata", "sessionStudents.apdata");

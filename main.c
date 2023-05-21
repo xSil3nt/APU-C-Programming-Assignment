@@ -23,8 +23,6 @@
 #define BOLD "\x1B[1m"
 #define UDL "\x1B[4m"
 
-char securePass[25];
-
 void main(), pause(), mainMenu(), adminLogin(), adminMenu(), tutorLogin(), tutorMenu(), studentLogin(), studentMenu(), regTutor(), delTutor(), regStudent(), delStudent(), createSession(), displaySessions(), delSession(), displaySessionStudents(), adminEnrollStudent(), enrollStudent(), displayStudents(), viewTutorSessions(), viewStudentSessions();
 char* lookupStudentName();
 char* lookupTutorName();
@@ -76,6 +74,7 @@ char currentUser[MAX_PASS_USER];
         }
     }
 
+char securePass[25];
     char* secureInput() {
         //Declare variables
         int i = 0;

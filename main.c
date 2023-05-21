@@ -222,6 +222,19 @@ char currentUser[MAX_PASS_USER];
         //Declare variables for tutor details
         char tutorId[MAX_ID], tutorPass[MAX_PASS_USER], tutorName[MAX_NAME_LEN], tutorSubject[MAX_NAME_LEN], hashedPass[32];
 
+        //Show list of current tutors
+        printf("Currently registered tutors:\n");
+        printf(MAG "\n%-10s %-20s %s\n", "Tutor ID", "Subject", "Tutor Name" RESET);
+        FILE *tutorList = fopen("tutors.apdata", "r");
+        char tutorline[MAX_LINE];
+        while (fgets(tutorline, sizeof(tutorline), tutorList)) {
+            char *id = strtok(tutorline, ",");
+            char *name = strtok(NULL, ";");
+            char *subject = strtok(NULL, "#");
+            printf("%-10s %-20s %s\n", id, subject, name);
+        }
+        fclose(tutorList);
+
         //Prompt for tutor ID
         printf("\nEnter tutor ID (Case sensitive): ");
         scanf("%s", tutorId);
@@ -336,6 +349,18 @@ char currentUser[MAX_PASS_USER];
     void regStudent() {
         //Declare variables for student details
         char studentId[MAX_ID], studentPass[MAX_PASS_USER], studentName[MAX_PASS_USER], hashedPass[32];
+
+        //Show list of current students
+        printf("Currently registered students:\n");
+        printf(MAG "\n%-12s %s\n", "Student ID", "Student Name" RESET);
+        FILE *studentList = fopen("students.apdata", "r");
+        char studentline[MAX_LINE];
+        while (fgets(studentline, sizeof(studentline), studentList)) {
+            char *id = strtok(studentline, ",");
+            char *name = strtok(NULL, "#");
+            printf("%-12s %s\n", id, name);
+        }
+        fclose(studentList);
 
         //Prompt for student ID
         printf("\nEnter student ID (Case sensitive, eg: TP001): ");

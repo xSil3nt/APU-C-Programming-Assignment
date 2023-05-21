@@ -343,7 +343,7 @@ char currentUser[MAX_PASS_USER];
         remove("tutorCreds.apdata");
         rename("temp.apdata", "tutorCreds.apdata");
 
-        printf(GRN BOLD"\nTutor deleted successfully." UDL "Don't forget to delete sessions corresponding to this tutor if needed.\n" RESET);
+        printf(GRN BOLD"\nTutor deleted successfully." UDL YEL "Don't forget to delete sessions corresponding to this tutor if needed.\n" RESET);
     }
 
     void regStudent() {

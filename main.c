@@ -472,9 +472,7 @@ char securePass[25];
 
     void tutorLogin() {
         //Function for logging in tutors
-        //TODO: Maybe commonize tutor and student login? Dunno how much work that will be, decide later?? 
         //Declare variables for input, 20 characters should be enough
-        //TODO: Maybe declare a const to store max input?
         char username[MAX_PASS_USER], password[MAX_PASS_USER], hashedpass[32];
         //Prompt for input
         printf("Logging in as "BOLD GRN "TUTOR\n" RESET);
@@ -779,8 +777,6 @@ char securePass[25];
             {
                 printf("%-10s %-15s %-20s %-20s %-10s %-10s %s\n", tutorId, sessionId, subject, name, day, time, location);
             }
-            
-            
         }
         fclose(sessions);
     }
